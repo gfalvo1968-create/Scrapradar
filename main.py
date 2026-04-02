@@ -127,12 +127,45 @@ def home():
             border-radius: 8px;
             max-width: 100%;
         }
+.navbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    background: #222;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+.nav-btn.active {
+    background: #1f6feb;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+    
     </style>
 </head>
 <body>
     <h1>ScrapRadar Dashboard</h1>
 
     <div class="card">
+        <div class="navbar">
+    <button class="nav-btn active" onclick="showSection('scrap', this)">Scrap Metals</button>
+    <button class="nav-btn" onclick="showSection('precious', this)">Precious / Refinery</button>
+    <button class="nav-btn" onclick="showSection('ewaste', this)">E-Waste / Recovery</button>
+</div>
         <h2>Current Market</h2>
         <button onclick="loadMarket()">Load Market</button>
         <pre id="marketBox">Press button to load market data...</pre>
@@ -164,6 +197,22 @@ def home():
         <button onclick="loadChart()">Load Chart</button>
         <canvas id="priceChart" height="120"></canvas>
     </div>
+
+    <div id="precious" class="section">
+    <div class="card">
+        <h2>Precious / Refinery</h2>
+        <p>Gold, Silver, Platinum, Palladium, Iridium</p>
+        <pre>Refinery system coming next...</pre>
+    </div>
+</div>
+
+<div id="ewaste" class="section">
+    <div class="card">
+        <h2>E-Waste / Recovery</h2>
+        <p>Chip boards, CPUs, RAM, hard drives</p>
+        <pre>Recovery system coming next...</pre>
+    </div>
+</div>    
 
     <script>
         let priceChart = null;
@@ -237,6 +286,16 @@ def home():
             });
         }
     </script>
+
+    <script>
+function showSection(sectionId) {
+  document.querySelectorAll('.section').forEach(sec => {
+    sec.classList.remove('active');
+  });
+
+  document.getElementById(sectionId).classList.add('active');
+}
+</script>
 </body>
 </html>
 """
