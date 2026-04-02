@@ -76,6 +76,7 @@ def home():
     <html>
     <head>
         <title>ScrapRadar</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>
             body {
@@ -145,7 +146,13 @@ def home():
         </div>
 
         <div class="card">
-            <h2>History</h2>
+            <h2>Price Chart</h2>
+            <button onclick="loadChart()">Load Chart</button>
+            <canvas id="priceChart" height="120"></canvas>
+        </div>
+     
+        <div class="card">
+            <h2>History</h2> 
             <button onclick="loadHistory()">Load History</button>
             <pre id="historyBox">Press button to load history...</pre>
         </div>
@@ -189,6 +196,43 @@ def home():
                 const data = await res.json();
                 document.getElementById('addBox').textContent = JSON.stringify(data, null, 2);
             }
+<script>
+async function loadHistory() { ... }
+
+async function addPrice() { ... }
+
+
+// 👇 ADD THIS RIGHT HERE
+let priceChart = null;
+
+async function loadChart() {
+    const res = await fetch('/history');
+    const data = await res.json();
+
+    const labels = data.map(item => item.created_at).reverse();
+    const prices = data.map(item => item.price).reverse();
+
+    const ctx = document.getElementById('priceChart').getContext('2d');
+
+    if (priceChart) {
+        priceChart.destroy();
+    }
+
+    priceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Copper Price History',
+                data: prices,
+                borderWidth: 2,
+                tension: 0.25
+            }]
+        }
+    });
+}
+</script>
+     
         </script>
     </body>
     </html>
