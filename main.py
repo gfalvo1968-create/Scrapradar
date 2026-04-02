@@ -191,7 +191,6 @@ def home():
                 document.getElementById('addBox').textContent = JSON.stringify(data, null, 2);
             }
 <script>
-
 </body>
 </html>
 """
