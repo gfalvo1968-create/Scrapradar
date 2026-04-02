@@ -73,27 +73,13 @@ def home():
     return """
     <html>
     <head>
-        <title>ScrapRadar</title>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 20px;
-                background: #f4f6f8;
-                color: #222;
-            }
-        </style>
+        ...
     </head>
     <body>
-
-        <!-- ALL your dashboard content -->
-        <!-- buttons, charts, history, etc -->
-
+        ...
         <script>
-            // ALL your JS functions here
+            ...
         </script>
-
     </body>
     </html>
     """
@@ -131,9 +117,7 @@ def home():
                 border-radius: 8px;
                 overflow-x: auto;
             }
-        </style>
-    </head>
-    <body>
+
         <h1>ScrapRadar Dashboard</h1>
 
         <div class="card">
@@ -203,9 +187,35 @@ def home():
                 document.getElementById('addBox').textContent = JSON.stringify(data, null, 2);
             }
 <script>
-</body>
-</html>
-"""
+@app.get("/")
+def home():
+    return """
+    <html>
+    <head>
+        <title>ScrapRadar</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                background: #f4f6f8;
+                color: #222;
+            }
+        </style>
+    </head>
+    <body>
+
+        <!-- ALL your dashboard content -->
+        <!-- buttons, charts, history, etc -->
+
+        <script>
+            // ALL your JS functions here
+        </script>
+    </body>
+    </html>
+    """
+
 async function loadMarket() {
     const res = await fetch('/market');
     const data = await res.json();
