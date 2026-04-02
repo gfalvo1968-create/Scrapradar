@@ -191,12 +191,39 @@ def home():
                 document.getElementById('addBox').textContent = JSON.stringify(data, null, 2);
             }
 <script>
-async function loadHistory() { ... }
+async function loadMarket() {
+    const res = await fetch('/market');
+    const data = await res.json();
+    document.getElementById('marketBox').textContent = JSON.stringify(data, null, 2);
+}
 
-async function addPrice() { ... }
+async function loadDecision() {
+    const res = await fetch('/decision');
+    const data = await res.json();
+    document.getElementById('decisionBox').textContent = JSON.stringify(data, null, 2);
+}
 
+async function loadHistory() {
+    const res = await fetch('/history');
+    const data = await res.json();
+    document.getElementById('historyBox').textContent = JSON.stringify(data, null, 2);
+}
 
-// 👇 ADD THIS RIGHT HERE
+async function addPrice() {
+    const metal = document.getElementById('metal').value;
+    const price = parseFloat(document.getElementById('price').value);
+    const yard = document.getElementById('yard').value;
+
+    const res = await fetch('/add-price', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ metal, price, yard })
+    });
+
+    const data = await res.json();
+    document.getElementById('addBox').textContent = JSON.stringify(data, null, 2);
+}
+
 let priceChart = null;
 
 async function loadChart() {
@@ -222,15 +249,18 @@ async function loadChart() {
                 borderWidth: 2,
                 tension: 0.25
             }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            }
         }
     });
 }
 </script>
-     
-        </script>
-    </body>
-    </html>
-    """
 
 
 @app.get("/market")
