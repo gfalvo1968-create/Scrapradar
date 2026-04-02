@@ -143,13 +143,7 @@ def home():
             <input id="yard" placeholder="Yard (example: Metro Scrap)" />
             <button onclick="addPrice()">Save Price</button>
             <pre id="addBox">Waiting for input...</pre>
-        </div>
-
-        <div class="card">
-            <h2>Price Chart</h2>
-            <button onclick="loadChart()">Load Chart</button>
-            <canvas id="priceChart" height="120"></canvas>
-        </div>
+        </div>m
      
         <div class="card">
             <h2>History</h2> 
@@ -157,7 +151,7 @@ def home():
             <pre id="historyBox">Press button to load history...</pre>
         </div>
 
-            <div class="card">
+        <div class="card">
             <h2>Price Chart</h2>
             <button onclick="loadChart()">Load Chart</button>
             <canvas id="priceChart" height="120"></canvas>
