@@ -68,11 +68,9 @@ def predict_prices(prices):
 
     return future, trend
 
-
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 def home():
     return """
-    <!DOCTYPE html>
     <html>
     <head>
         <title>ScrapRadar</title>
@@ -85,6 +83,20 @@ def home():
                 background: #f4f6f8;
                 color: #222;
             }
+        </style>
+    </head>
+    <body>
+
+        <!-- ALL your dashboard content -->
+        <!-- buttons, charts, history, etc -->
+
+        <script>
+            // ALL your JS functions here
+        </script>
+
+    </body>
+    </html>
+    """
             h1 {
                 margin-bottom: 10px;
             }
