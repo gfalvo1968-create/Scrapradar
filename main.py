@@ -191,6 +191,10 @@ def home():
                 document.getElementById('addBox').textContent = JSON.stringify(data, null, 2);
             }
 <script>
+
+</body>
+</html>
+"""
 async function loadMarket() {
     const res = await fetch('/market');
     const data = await res.json();
