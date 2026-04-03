@@ -320,108 +320,51 @@ def home():
 
         async function loadHistory() {
             const res = await fetch('/history');
-            const data = await res.json();
-            document.getElementById('historyBox').textContent = JSON.stringify(data, null, 2);
-        }
+            <h2>Add Precious Entry</h2>
 
-        async function loadChart() {
-            const res = await fetch('/history');
-            const data = await res.json();
+<input id="preciousMetal" placeholder="Metal (example: gold)" />
 
-            const labels = data.map(item => item.created_at).reverse();
-            const prices = data.map(item => item.price).reverse();
+function setPurityFromKarat() {
+    const karat = document.getElementById('karatSelect').value;
+    if (karat) {
+        document.getElementById('preciousPurity').value = karat;
+    }
+}
 
-            const canvas = document.getElementById('priceChart');
-            const ctx = canvas.getContext('2d');
+<input id="preciousPrice" placeholder="Price per oz (example: 2350)" type="number" step="0.01" />
 
-            if (priceChart) {
-                priceChart.destroy();
-            }
+<input id="preciousWeight" placeholder="Weight" type="number" step="0.01" />
 
-            priceChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Price History',
-                        data: prices,
-                        borderWidth: 2,
-                        tension: 0.25
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: false
-                        }
-                    }
-                }
-            });
-        }
+<select id="preciousUnit">
+    <option value="oz">Troy Ounces (oz)</option>
+    <option value="dwt">Pennyweights (dwt)</option>
+</select>
 
-        async function addPrecious() {
-            const metal = document.getElementById('preciousMetal').value;
-            const price = parseFloat(document.getElementById('preciousPrice').value);
-            const weight = parseFloat(document.getElementById('preciousWeight').value);
-            const unit = document.getElementById('preciousUnit').value;
-            const purity = parseFloat(document.getElementById('preciousPurity').value);
-            const refinery = document.getElementById('preciousRefinery').value;
+<!-- 🔥 NEW: Karat selector -->
+<select id="karatSelect" onchange="setPurityFromKarat()">
+    <option value="">Select Karat (optional)</option>
+    <option value="41.7">10K (41.7%)</option>
+    <option value="58.5">14K (58.5%)</option>
+    <option value="75">18K (75%)</option>
+    <option value="91.6">22K (91.6%)</option>
+    <option value="99.9">24K (99.9%)</option>
+</select>
 
-            const res = await fetch('/add-precious', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ metal, price, weight, unit, purity, refinery })
-            });
+<input id="preciousPurity" placeholder="Purity %" type="number" step="0.1" />
 
-            const data = await res.json();
-            document.getElementById('preciousAddBox').textContent = JSON.stringify(data, null, 2);
-        }
+<input id="preciousRefinery" placeholder="Refinery name" />
 
-        async function loadPreciousHistory() {
-            const res = await fetch('/history-precious');
-            const data = await res.json();
-            document.getElementById('preciousHistoryBox').textContent = JSON.stringify(data, null, 2);
-        }
+<!-- 🔥 NEW: Payout selector -->
+<select id="payoutPercent">
+    <option value="0.90">90% payout</option>
+    <option value="0.92">92% payout</option>
+    <option value="0.95">95% payout</option>
+    <option value="0.98" selected>98% payout</option>
+</select>
 
-        function calcPreciousPayout() {
-            const metal = document.getElementById('preciousMetal').value;
-            const price = parseFloat(document.getElementById('preciousPrice').value);
-            const weight = parseFloat(document.getElementById('preciousWeight').value);
-            const unit = document.getElementById('preciousUnit').value;
-            const purity = parseFloat(document.getElementById('preciousPurity').value);
-            const refinery = document.getElementById('preciousRefinery').value;
+<button onclick="addPrecious()">Save Precious Entry</button>
 
-            if (isNaN(price) || isNaN(weight) || isNaN(purity)) {
-                document.getElementById('preciousPayoutBox').textContent =
-                    JSON.stringify({ error: "Enter valid price, weight, and purity first." }, null, 2);
-                return;
-            }
-
-            let weightOz = weight;
-            if (unit === 'dwt') {
-                weightOz = weight / 20;
-            }
-
-            const grossValue = price * weightOz;
-            const pureValue = grossValue * (purity / 100);
-            const estimatedPayout = pureValue * 0.98;
-
-            const result = {
-                metal: metal,
-                refinery: refinery,
-                unit: unit,
-                entered_weight: weight,
-                converted_weight_oz: Number(weightOz.toFixed(4)),
-                purity_percent: purity,
-                price_per_oz: price,
-                gross_value: Number(grossValue.toFixed(2)),
-                pure_value: Number(pureValue.toFixed(2)),
-                estimated_payout: Number(estimatedPayout.toFixed(2))
-            };
-
-            document.getElementById('preciousPayoutBox').textContent = JSON.stringify(result, null, 2);
-        }
+<pre id="preciousAddBox">Waiting for precious input...</pre>
     </script>
 </body>
 </html>
