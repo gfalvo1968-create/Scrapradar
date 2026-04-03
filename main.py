@@ -57,6 +57,7 @@ def predict_prices(prices):
 
     future = []
     last_x = len(prices) - 1
+
     for i in range(1, 4):
         future_price = slope * (last_x + i) + intercept
         future.append(round(float(future_price), 4))
@@ -127,34 +128,34 @@ def home():
             border-radius: 8px;
             max-width: 100%;
         }
-.navbar {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
 
-.nav-btn {
-    background: #222;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 16px;
-    cursor: pointer;
-}
+        .navbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
 
-.nav-btn.active {
-    background: #1f6feb;
-}
+        .nav-btn {
+            background: #222;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+        }
 
-.section {
-    display: none;
-}
+        .nav-btn.active {
+            background: #1f6feb;
+        }
 
-.section.active {
-    display: block;
-}
-    
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -162,59 +163,77 @@ def home():
 
     <div class="card">
         <div class="navbar">
-    <button class="nav-btn active" onclick="showSection('scrap', this)">Scrap Metals</button>
-    <button class="nav-btn" onclick="showSection('precious', this)">Precious / Refinery</button>
-    <button class="nav-btn" onclick="showSection('ewaste', this)">E-Waste / Recovery</button>
-</div>
-        <h2>Current Market</h2>
-        <button onclick="loadMarket()">Load Market</button>
-        <pre id="marketBox">Press button to load market data...</pre>
+            <button class="nav-btn active" onclick="showSection('scrap', this)">Scrap Metals</button>
+            <button class="nav-btn" onclick="showSection('precious', this)">Precious / Refinery</button>
+            <button class="nav-btn" onclick="showSection('ewaste', this)">E-Waste / Recovery</button>
+        </div>
     </div>
 
-    <div class="card">
-        <h2>Decision</h2>
-        <button onclick="loadDecision()">Get Decision</button>
-        <pre id="decisionBox">Press button to load decision...</pre>
-    </div>
+    <div id="scrap" class="section active">
+        <div class="card">
+            <h2>Current Market</h2>
+            <button onclick="loadMarket()">Load Market</button>
+            <pre id="marketBox">Press button to load market data...</pre>
+        </div>
 
-    <div class="card">
-        <h2>Add Price</h2>
-        <input id="metal" placeholder="Metal (example: copper)" />
-        <input id="price" placeholder="Price (example: 4.25)" type="number" step="0.01" />
-        <input id="yard" placeholder="Yard (example: Metro Scrap)" />
-        <button onclick="addPrice()">Save Price</button>
-        <pre id="addBox">Waiting for input...</pre>
-    </div>
+        <div class="card">
+            <h2>Decision</h2>
+            <button onclick="loadDecision()">Get Decision</button>
+            <pre id="decisionBox">Press button to load decision...</pre>
+        </div>
 
-    <div class="card">
-        <h2>History</h2>
-        <button onclick="loadHistory()">Load History</button>
-        <pre id="historyBox">Press button to load history...</pre>
-    </div>
+        <div class="card">
+            <h2>Add Price</h2>
+            <input id="metal" placeholder="Metal (example: copper)" />
+            <input id="price" placeholder="Price (example: 4.25)" type="number" step="0.01" />
+            <input id="yard" placeholder="Yard (example: Metro Scrap)" />
+            <button onclick="addPrice()">Save Price</button>
+            <pre id="addBox">Waiting for input...</pre>
+        </div>
 
-    <div class="card">
-        <h2>Price Chart</h2>
-        <button onclick="loadChart()">Load Chart</button>
-        <canvas id="priceChart" height="120"></canvas>
+        <div class="card">
+            <h2>History</h2>
+            <button onclick="loadHistory()">Load History</button>
+            <pre id="historyBox">Press button to load history...</pre>
+        </div>
+
+        <div class="card">
+            <h2>Price Chart</h2>
+            <button onclick="loadChart()">Load Chart</button>
+            <canvas id="priceChart" height="120"></canvas>
+        </div>
     </div>
 
     <div id="precious" class="section">
-    <div class="card">
-        <h2>Precious / Refinery</h2>
-        <p>Gold, Silver, Platinum, Palladium, Iridium</p>
-        <pre>Refinery system coming next...</pre>
+        <div class="card">
+            <h2>Precious / Refinery</h2>
+            <p>Gold, Silver, Platinum, Palladium, Iridium</p>
+            <pre>Refinery system coming next...</pre>
+        </div>
     </div>
-</div>
 
-<div id="ewaste" class="section">
-    <div class="card">
-        <h2>E-Waste / Recovery</h2>
-        <p>Chip boards, CPUs, RAM, hard drives</p>
-        <pre>Recovery system coming next...</pre>
+    <div id="ewaste" class="section">
+        <div class="card">
+            <h2>E-Waste / Recovery</h2>
+            <p>Chip boards, CPUs, RAM, hard drives</p>
+            <pre>Recovery system coming next...</pre>
+        </div>
     </div>
-</div>    
 
     <script>
+        function showSection(sectionId, btn) {
+            document.querySelectorAll('.section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            document.getElementById(sectionId).classList.add('active');
+            btn.classList.add('active');
+        }
+
         let priceChart = null;
 
         async function loadMarket() {
@@ -286,16 +305,6 @@ def home():
             });
         }
     </script>
-
-    <script>
-function showSection(sectionId) {
-  document.querySelectorAll('.section').forEach(sec => {
-    sec.classList.remove('active');
-  });
-
-  document.getElementById(sectionId).classList.add('active');
-}
-</script>
 </body>
 </html>
 """
