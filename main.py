@@ -24,8 +24,8 @@ class PreciousEntry(BaseModel):
     unit: str
     purity: float
     refinery: str
-    cost: float
 
+from fastapi.responses import HTMLResponse
 
 @app.get("/", response_class=HTMLResponse)
 def home():
@@ -37,12 +37,24 @@ def home():
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-    ...
+
+<h1>ScrapRadar Dashboard</h1>
+
+<button onclick="loadMarket()">Load Market Data</button>
+
+<pre id="output">Click button to load data...</pre>
+
+<script>
+async function loadMarket() {
+    const res = await fetch('https://scrapradar-production.up.railway.app/market');
+    const data = await res.json();
+    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+}
+</script>
+
 </body>
 </html>
 """
-
-
 
 def init_db():
 
