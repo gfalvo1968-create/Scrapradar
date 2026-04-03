@@ -45,24 +45,35 @@ def home():
     Load Market Data
 </button>
 
+<div class="box">
+    <h2>Market Data</h2>
+    <pre id="output">Loading...</pre>
+</div>
+
 <pre id="output" style="margin-top:20px; background:#000; padding:10px;">
 Waiting...
 </pre>
 
 <script>
-async function loadMarket() {
+async function loadData() {
     try {
         const res = await fetch('/market');
         const data = await res.json();
 
-        document.getElementById('output').textContent =
+        document.getElementById('output').innerText =
             JSON.stringify(data, null, 2);
 
     } catch (err) {
-        document.getElementById('output').textContent =
+        document.getElementById('output').innerText =
             "Error loading data";
     }
 }
+
+// AUTO LOAD on page open
+loadData();
+
+// OPTIONAL: refresh every 10 seconds
+setInterval(loadData, 10000);
 </script>
 
 </body>
