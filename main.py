@@ -36,7 +36,7 @@ def init_db():
                 )
             """)
 
-                        conn.execute("""
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS precious_prices (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     metal TEXT NOT NULL,
