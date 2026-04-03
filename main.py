@@ -6,6 +6,10 @@ import sqlite3
 import yfinance as yf
 import numpy as np
 
+@app.get("/", response_class=HTMLResponse)
+def home():
+    return """
+
 app = FastAPI()
 
 DB_NAME = "scrapradar_v3.db"
