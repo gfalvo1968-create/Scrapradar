@@ -24,6 +24,7 @@ class PreciousEntry(BaseModel):
     unit: str
     purity: float
     refinery: str
+    cost: float   # 👈 ADD THIS
 
 
 def init_db():
@@ -38,17 +39,17 @@ def init_db():
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
-
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS precious_prices (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    metal TEXT NOT NULL,
-                    price REAL NOT NULL,
-                    weight REAL NOT NULL,
-                    unit TEXT NOT NULL,
-                    purity REAL NOT NULL,
-                    refinery TEXT NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          
+             CREATE TABLE IF NOT EXISTS precious (
+                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                 metal TEXT,
+                 price REAL,
+                 weight REAL,
+                 unit TEXT,
+                 purity REAL,
+                 refinery TEXT,
+                 cost REAL,   -- 👈 ADD THIS
+                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
 
@@ -404,7 +405,11 @@ def home():
             const unit = document.getElementById('preciousUnit').value;
             const purity = parseFloat(document.getElementById('preciousPurity').value);
             const refinery = document.getElementById('preciousRefinery').value;
-
+            conn.execute("""
+                          INSERT INTO precious (metal, price, weight, unit, purity, refinery, cost)
+                          VALUES (?, ?, ?, ?, ?, ?, ?)
+                          """, (entry.metal, entry.price, entry.weight, entry.unit,
+                          entry.purity, entry.refinery, entry.cost))
             const res = await fetch('/add-precious', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
