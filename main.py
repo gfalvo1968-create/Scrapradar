@@ -18,17 +18,13 @@ class PriceEntry(BaseModel):
 
 
 class PreciousEntry(BaseModel):
-  conn.execute("""
-    INSERT INTO precious (metal, price, weight, unit, purity, refinery)
-    VALUES (?, ?, ?, ?, ?, ?)
-""", (...))
     metal: str
     price: float
     weight: float
     unit: str
     purity: float
     refinery: str
-    cost: float   # 👈 ADD THIS
+    cost: float
 
 
 def init_db():
