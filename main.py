@@ -417,33 +417,24 @@ def home():
             });
         }
 
-        async function addPrecious() {
-            const metal = document.getElementById('preciousMetal').value;
-            const price = parseFloat(document.getElementById('preciousPrice').value);
-            const weight = parseFloat(document.getElementById('preciousWeight').value);
-            const unit = document.getElementById('preciousUnit').value;
-            const purity = parseFloat(document.getElementById('preciousPurity').value);
-            const refinery = document.getElementById('preciousRefinery').value;
+@app.post("/add-precious")
+def add_precious(entry: PreciousEntry):
+    with closing(sqlite3.connect(DB_NAME)) as conn:
+        with conn:
             conn.execute("""
-                          INSERT INTO precious (metal, price, weight, unit, purity, refinery, cost)
-                          VALUES (?, ?, ?, ?, ?, ?, ?)
-                          """, (entry.metal, entry.price, entry.weight, entry.unit,
-                          entry.purity, entry.refinery, entry.cost))
-            const res = await fetch('/add-precious', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ metal, price, weight, unit, purity, refinery })
-            });
+                INSERT INTO precious (metal, price, weight, unit, purity, refinery, cost)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                entry.metal,
+                entry.price,
+                entry.weight,
+                entry.unit,
+                entry.purity,
+                entry.refinery,
+                entry.cost
+            ))
 
-            const data = await res.json();
-            document.getElementById('preciousAddBox').textContent = JSON.stringify(data, null, 2);
-        }
-
-        async function loadPreciousHistory() {
-            const res = await fetch('/history-precious');
-            const data = await res.json();
-            document.getElementById('preciousHistoryBox').textContent = JSON.stringify(data, null, 2);
-        }
+    return {"status": "saved"}
 
        function calcPreciousPayout() {
     const metal = document.getElementById('preciousMetal').value;
