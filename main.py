@@ -41,9 +41,18 @@ def home():
 
 <h1>ScrapRadar Dashboard</h1>
 
-<button onclick="loadMarket()" style="padding:10px; font-size:16px;">
+button onclick="loadMarket()" style="padding:10px; font-size:16px;">
     Load Market Data
 </button
+
+<pre id="output" style="
+    margin-top:20px;
+    background:#000;
+    padding:15px;
+    border-radius:8px;
+    color:#0f0;
+    font-size:14px;
+">Waiting...</pre>
 
 <pre id="output" style="margin-top:20px; background:#000; padding:10px;">
 Waiting...
