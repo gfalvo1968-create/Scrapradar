@@ -8,8 +8,7 @@ import numpy as np
 
 app = FastAPI()
 
-DB_NAME = "scrapradar_v3.db"
-
+DB_NAME = "scrcrapradar”
 
 class PriceEntry(BaseModel):
     metal: str
@@ -24,8 +23,7 @@ class PreciousEntry(BaseModel):
     unit: str
     purity: float
     refinery: str
-    cost: float
-
+    payout_percent: float
 
 def init_db():
     with closing(sqlite3.connect(DB_NAME)) as conn:
