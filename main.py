@@ -18,6 +18,10 @@ class PriceEntry(BaseModel):
 
 
 class PreciousEntry(BaseModel):
+  conn.execute("""
+    INSERT INTO precious (metal, price, weight, unit, purity, refinery)
+    VALUES (?, ?, ?, ?, ?, ?)
+""", (...))
     metal: str
     price: float
     weight: float
@@ -31,18 +35,19 @@ def init_db():
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
             conn.execute("""
-                CREATE TABLE IF NOT EXISTS prices (
-                 try:
-    conn.execute("ALTER TABLE precious ADD COLUMN cost REAL DEFAULT 0")
-except:
-    pass 
+                CREATE TABLE IF NOT EXISTS precious (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    metal TEXT NOT NULL,
-                    price REAL NOT NULL,
-                    yard TEXT NOT NULL,
+                    metal TEXT,
+                    price REAL,
+                    weight REAL,
+                    unit TEXT,
+                    purity REAL,
+                    refinery TEXT,
+                    cost REAL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+            
           
              CREATE TABLE IF NOT EXISTS precious (
                  id INTEGER PRIMARY KEY AUTOINCREMENT,
