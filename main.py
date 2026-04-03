@@ -265,15 +265,6 @@ def home():
     <pre id="preciousAddBox">Waiting for precious input...</pre>
 </div>
 
-    <div class="card">
-        <h2>Add Precious Entry</h2>
-        <input id="preciousMetal" placeholder="Metal (example: gold)" />
-        <input id="preciousPrice" placeholder="Price per oz (example: 2350.50)" type="number" step="0.01" />
-        <input id="preciousWeight" placeholder="Weight in oz (example: 0.5)" type="number" step="0.01" />
-        <input id="preciousRefinery" placeholder="Refinery name" />
-        <button onclick="addPrecious()">Save Precious Entry</button>
-        <pre id="preciousAddBox">Waiting for precious input...</pre>
-    </div>
 
     <div class="card">
         <h2>Precious History</h2>
