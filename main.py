@@ -483,7 +483,7 @@ def get_history():
 
     return [dict(row) for row in rows]
     
-   @app.post("/add-precious")
+@app.post("/add-precious")
 def add_precious(entry: PreciousEntry):
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
@@ -494,6 +494,26 @@ def add_precious(entry: PreciousEntry):
 
     gross_value = round(entry.price * entry.weight, 2)
     estimated_payout = round(gross_value * 0.98, 2)
+
+    return {
+        "status": "saved",
+        "metal": entry.metal,
+        "gross_value": gross_value,
+        "estimated_payout": estimated_payout
+    }
+
+
+@app.get("/history-precious")
+def get_precious_history():
+    with closing(sqlite3.connect(DB_NAME)) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("""
+            SELECT id, metal, price, weight, refinery, created_at
+            FROM precious_prices
+            ORDER BY created_at DESC
+        """).fetchall()
+
+    return [dict(row) for row in rows]
 
     return {
         "status": "saved",
