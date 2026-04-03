@@ -16,6 +16,11 @@ class PriceEntry(BaseModel):
     price: float
     yard: str
 
+class PreciousEntry(BaseModel):
+    metal: str
+    price: float
+    weight: float
+    refinery: str
 
 def init_db():
     with closing(sqlite3.connect(DB_NAME)) as conn:
@@ -30,6 +35,40 @@ def init_db():
                 )
             """)
 
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS precious_prices (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    metal TEXT NOT NULL,
+                    price REAL NOT NULL,
+                    weight REAL NOT NULL,
+                    refinery TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            
+def init_db():
+    with closing(sqlite3.connect(DB_NAME)) as conn:
+        with conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS prices (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    metal TEXT NOT NULL,
+                    price REAL NOT NULL,
+                    yard TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS precious_prices (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    metal TEXT NOT NULL,
+                    price REAL NOT NULL,
+                    weight REAL NOT NULL,
+                    refinery TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
 
 init_db()
 
@@ -204,13 +243,35 @@ def home():
         </div>
     </div>
 
-    <div id="precious" class="section">
-        <div class="card">
-            <h2>Precious / Refinery</h2>
-            <p>Gold, Silver, Platinum, Palladium, Iridium</p>
-            <pre>Refinery system coming next...</pre>
-        </div>
+    <<div id="precious" class="section">
+    <div class="card">
+        <h2>Precious / Refinery Market</h2>
+        <p>Gold, Silver, Platinum, Palladium, Iridium</p>
+        <pre id="preciousMarketBox">Use entries below to build refinery history.</pre>
     </div>
+
+    <div class="card">
+        <h2>Add Precious Entry</h2>
+        <input id="preciousMetal" placeholder="Metal (example: gold)" />
+        <input id="preciousPrice" placeholder="Price per oz (example: 2350.50)" type="number" step="0.01" />
+        <input id="preciousWeight" placeholder="Weight in oz (example: 0.5)" type="number" step="0.01" />
+        <input id="preciousRefinery" placeholder="Refinery name" />
+        <button onclick="addPrecious()">Save Precious Entry</button>
+        <pre id="preciousAddBox">Waiting for precious input...</pre>
+    </div>
+
+    <div class="card">
+        <h2>Precious History</h2>
+        <button onclick="loadPreciousHistory()">Load Precious History</button>
+        <pre id="preciousHistoryBox">Press button to load precious history...</pre>
+    </div>
+
+    <div class="card">
+        <h2>Precious Payout Estimate</h2>
+        <button onclick="calcPreciousPayout()">Calculate Payout</button>
+        <pre id="preciousPayoutBox">Enter a precious entry, then calculate payout...</pre>
+    </div>
+</div>
 
     <div id="ewaste" class="section">
         <div class="card">
@@ -268,6 +329,55 @@ def home():
             const data = await res.json();
             document.getElementById('historyBox').textContent = JSON.stringify(data, null, 2);
         }
+
+    async function addPrecious() {
+    const metal = document.getElementById('preciousMetal').value;
+    const price = parseFloat(document.getElementById('preciousPrice').value);
+    const weight = parseFloat(document.getElementById('preciousWeight').value);
+    const refinery = document.getElementById('preciousRefinery').value;
+
+    const res = await fetch('/add-precious', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ metal, price, weight, refinery })
+    });
+
+    const data = await res.json();
+    document.getElementById('preciousAddBox').textContent = JSON.stringify(data, null, 2);
+}
+
+async function loadPreciousHistory() {
+    const res = await fetch('/history-precious');
+    const data = await res.json();
+    document.getElementById('preciousHistoryBox').textContent = JSON.stringify(data, null, 2);
+}
+
+function calcPreciousPayout() {
+    const metal = document.getElementById('preciousMetal').value;
+    const price = parseFloat(document.getElementById('preciousPrice').value);
+    const weight = parseFloat(document.getElementById('preciousWeight').value);
+    const refinery = document.getElementById('preciousRefinery').value;
+
+    if (isNaN(price) || isNaN(weight)) {
+        document.getElementById('preciousPayoutBox').textContent =
+            JSON.stringify({ error: "Enter valid price and weight first." }, null, 2);
+        return;
+    }
+
+    const gross = price * weight;
+    const estimated_payout = gross * 0.98;
+
+    const result = {
+        metal: metal,
+        refinery: refinery,
+        weight_oz: weight,
+        price_per_oz: price,
+        gross_value: Number(gross.toFixed(2)),
+        estimated_payout: Number(estimated_payout.toFixed(2))
+    };
+
+    document.getElementById('preciousPayoutBox').textContent = JSON.stringify(result, null, 2);
+}
 
         async function loadChart() {
             const res = await fetch('/history');
@@ -373,4 +483,34 @@ def get_history():
 
     return [dict(row) for row in rows]
     
-   
+   @app.post("/add-precious")
+def add_precious(entry: PreciousEntry):
+    with closing(sqlite3.connect(DB_NAME)) as conn:
+        with conn:
+            conn.execute("""
+                INSERT INTO precious_prices (metal, price, weight, refinery)
+                VALUES (?, ?, ?, ?)
+            """, (entry.metal, entry.price, entry.weight, entry.refinery))
+
+    gross_value = round(entry.price * entry.weight, 2)
+    estimated_payout = round(gross_value * 0.98, 2)
+
+    return {
+        "status": "saved",
+        "metal": entry.metal,
+        "gross_value": gross_value,
+        "estimated_payout": estimated_payout
+    }
+
+
+@app.get("/history-precious")
+def get_precious_history():
+    with closing(sqlite3.connect(DB_NAME)) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("""
+            SELECT id, metal, price, weight, refinery, created_at
+            FROM precious_prices
+            ORDER BY created_at DESC
+        """).fetchall()
+
+    return [dict(row) for row in rows]
