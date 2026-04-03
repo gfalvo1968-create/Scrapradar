@@ -32,6 +32,10 @@ def init_db():
         with conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS prices (
+                 try:
+    conn.execute("ALTER TABLE precious ADD COLUMN cost REAL DEFAULT 0")
+except:
+    pass 
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     metal TEXT NOT NULL,
                     price REAL NOT NULL,
