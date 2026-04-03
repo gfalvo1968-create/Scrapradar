@@ -8,7 +8,8 @@ import numpy as np
 
 app = FastAPI()
 
-DB_NAME = "scrapradar.db"
+DB_NAME = "scrapradar_v3.db"
+
 
 class PriceEntry(BaseModel):
     metal: str
@@ -23,35 +24,33 @@ class PreciousEntry(BaseModel):
     unit: str
     purity: float
     refinery: str
-    payout_percent: float
+    cost: float
+
 
 def init_db():
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
             conn.execute("""
-                CREATE TABLE IF NOT EXISTS precious (
+                CREATE TABLE IF NOT EXISTS prices (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    metal TEXT,
-                    price REAL,
-                    weight REAL,
-                    unit TEXT,
-                    purity REAL,
-                    refinery TEXT,
-                    cost REAL,
+                    metal TEXT NOT NULL,
+                    price REAL NOT NULL,
+                    yard TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
-          
-               CREATE TABLE IF NOT EXISTS precious (
-                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                 metal TEXT,
-                 price REAL,
-                 weight REAL,
-                 unit TEXT,
-                 purity REAL,
-                 refinery TEXT,
-                 cost REAL,   
-                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS precious_prices (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    metal TEXT NOT NULL,
+                    price REAL NOT NULL,
+                    weight REAL NOT NULL,
+                    unit TEXT NOT NULL,
+                    purity REAL NOT NULL,
+                    refinery TEXT NOT NULL,
+                    cost REAL NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
 
