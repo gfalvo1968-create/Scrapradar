@@ -6,10 +6,6 @@ import sqlite3
 import yfinance as yf
 import numpy as np
 
-@app.get("/", response_class=HTMLResponse)
-def home():
-    return """
-
 app = FastAPI()
 
 DB_NAME = "scrapradar_v3.db"
@@ -31,7 +27,25 @@ class PreciousEntry(BaseModel):
     cost: float
 
 
+@app.get("/", response_class=HTMLResponse)
+def home():
+    return """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ScrapRadar Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+    ...
+</body>
+</html>
+"""
+
+
+
 def init_db():
+
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
             conn.execute("""
