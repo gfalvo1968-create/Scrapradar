@@ -43,12 +43,7 @@ def home():
 
 <button onclick="loadMarket()" style="padding:10px; font-size:16px;">
     Load Market Data
-</button>
-
-<div class="box">
-    <h2>Market Data</h2>
-    <pre id="output">Loading...</pre>
-</div>
+</button
 
 <pre id="output" style="margin-top:20px; background:#000; padding:10px;">
 Waiting...
@@ -69,11 +64,8 @@ async function loadData() {
     }
 }
 
-// AUTO LOAD on page open
+// auto load
 loadData();
-
-// OPTIONAL: refresh every 10 seconds
-setInterval(loadData, 10000);
 </script>
 
 </body>
