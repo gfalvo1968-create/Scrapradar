@@ -8,7 +8,7 @@ import numpy as np
 
 app = FastAPI()
 
-DB_NAME = "scrapradar_v2.db"
+DB_NAME = "scrapradar_v3.db"
 
 
 class PriceEntry(BaseModel):
@@ -79,7 +79,6 @@ def predict_prices(prices):
 
     future = []
     last_x = len(prices) - 1
-
     for i in range(1, 4):
         future_price = slope * (last_x + i) + intercept
         future.append(round(float(future_price), 4))
@@ -95,6 +94,9 @@ def home():
 <head>
     <title>ScrapRadar Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -120,7 +122,7 @@ def home():
             padding: 10px;
             margin: 6px 0;
             width: 100%;
-            max-width: 300px;
+            max-width: 320px;
             display: block;
             border-radius: 8px;
             border: 1px solid #ddd;
@@ -167,7 +169,7 @@ def home():
             border-radius: 10px;
             padding: 10px 16px;
             cursor: pointer;
-            max-width: 300px;
+            max-width: 320px;
         }
 
         .nav-btn.active {
@@ -184,7 +186,7 @@ def home():
     </style>
 </head>
 <body>
-    <h1>ScrapRadar Dashboard</h1>
+    <h1>ScrapRadar Dashboard v3</h1>
 
     <div class="card">
         <div class="navbar">
@@ -231,14 +233,23 @@ def home():
 
     <div id="precious" class="section">
         <div class="card">
-            <h2>Precious / Refinery Market</h2>
+            <h2>Precious / Refinery</h2>
             <p>Gold, Silver, Platinum, Palladium, Iridium</p>
             <pre id="preciousMarketBox">Use entries below to build refinery history.</pre>
         </div>
 
         <div class="card">
             <h2>Add Precious Entry</h2>
-            <input id="preciousMetal" placeholder="Metal (example: gold)" />
+
+            <select id="preciousMetal">
+                <option value="">Select Metal</option>
+                <option value="gold">Gold</option>
+                <option value="silver">Silver</option>
+                <option value="platinum">Platinum</option>
+                <option value="palladium">Palladium</option>
+                <option value="iridium">Iridium</option>
+            </select>
+
             <input id="preciousPrice" placeholder="Price per troy oz (example: 2350.50)" type="number" step="0.01" />
             <input id="preciousWeight" placeholder="Weight (example: 0.5 or 5)" type="number" step="0.01" />
 
@@ -247,8 +258,24 @@ def home():
                 <option value="dwt">Pennyweights (dwt)</option>
             </select>
 
+            <select id="karatSelect" onchange="setPurityFromKarat()">
+                <option value="">Select Karat / Purity Preset</option>
+                <option value="41.7">10K (41.7%)</option>
+                <option value="58.5">14K (58.5%)</option>
+                <option value="75">18K (75%)</option>
+                <option value="91.6">22K (91.6%)</option>
+                <option value="99.9">24K (99.9%)</option>
+            </select>
+
             <input id="preciousPurity" placeholder="Purity % (example: 41.7 for 10K)" type="number" step="0.1" />
             <input id="preciousRefinery" placeholder="Refinery name" />
+
+            <select id="payoutPercent">
+                <option value="0.90">90% payout</option>
+                <option value="0.92">92% payout</option>
+                <option value="0.95">95% payout</option>
+                <option value="0.98" selected>98% payout</option>
+            </select>
 
             <button onclick="addPrecious()">Save Precious Entry</button>
             <pre id="preciousAddBox">Waiting for precious input...</pre>
@@ -271,7 +298,7 @@ def home():
         <div class="card">
             <h2>E-Waste / Recovery</h2>
             <p>Chip boards, CPUs, RAM, hard drives</p>
-            <pre>Recovery system coming next...</pre>
+            <pre>E-waste system coming next...</pre>
         </div>
     </div>
 
@@ -287,6 +314,15 @@ def home():
 
             document.getElementById(sectionId).classList.add('active');
             btn.classList.add('active');
+        }
+
+        function setPurityFromKarat() {
+            const karat = document.getElementById('karatSelect');
+            if (!karat) return;
+            const value = karat.value;
+            if (value) {
+                document.getElementById('preciousPurity').value = value;
+            }
         }
 
         let priceChart = null;
@@ -320,51 +356,111 @@ def home():
 
         async function loadHistory() {
             const res = await fetch('/history');
-            <h2>Add Precious Entry</h2>
+            const data = await res.json();
+            document.getElementById('historyBox').textContent = JSON.stringify(data, null, 2);
+        }
 
-<input id="preciousMetal" placeholder="Metal (example: gold)" />
+        async function loadChart() {
+            const res = await fetch('/history');
+            const data = await res.json();
 
-function setPurityFromKarat() {
-    const karat = document.getElementById('karatSelect').value;
-    if (karat) {
-        document.getElementById('preciousPurity').value = karat;
-    }
-}
+            const labels = data.map(item => item.created_at).reverse();
+            const prices = data.map(item => item.price).reverse();
 
-<input id="preciousPrice" placeholder="Price per oz (example: 2350)" type="number" step="0.01" />
+            const canvas = document.getElementById('priceChart');
+            const ctx = canvas.getContext('2d');
 
-<input id="preciousWeight" placeholder="Weight" type="number" step="0.01" />
+            if (priceChart) {
+                priceChart.destroy();
+            }
 
-<select id="preciousUnit">
-    <option value="oz">Troy Ounces (oz)</option>
-    <option value="dwt">Pennyweights (dwt)</option>
-</select>
+            priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Price History',
+                        data: prices,
+                        borderWidth: 2,
+                        tension: 0.25
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
 
-<!-- 🔥 NEW: Karat selector -->
-<select id="karatSelect" onchange="setPurityFromKarat()">
-    <option value="">Select Karat (optional)</option>
-    <option value="41.7">10K (41.7%)</option>
-    <option value="58.5">14K (58.5%)</option>
-    <option value="75">18K (75%)</option>
-    <option value="91.6">22K (91.6%)</option>
-    <option value="99.9">24K (99.9%)</option>
-</select>
+        async function addPrecious() {
+            const metal = document.getElementById('preciousMetal').value;
+            const price = parseFloat(document.getElementById('preciousPrice').value);
+            const weight = parseFloat(document.getElementById('preciousWeight').value);
+            const unit = document.getElementById('preciousUnit').value;
+            const purity = parseFloat(document.getElementById('preciousPurity').value);
+            const refinery = document.getElementById('preciousRefinery').value;
 
-<input id="preciousPurity" placeholder="Purity %" type="number" step="0.1" />
+            const res = await fetch('/add-precious', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ metal, price, weight, unit, purity, refinery })
+            });
 
-<input id="preciousRefinery" placeholder="Refinery name" />
+            const data = await res.json();
+            document.getElementById('preciousAddBox').textContent = JSON.stringify(data, null, 2);
+        }
 
-<!-- 🔥 NEW: Payout selector -->
-<select id="payoutPercent">
-    <option value="0.90">90% payout</option>
-    <option value="0.92">92% payout</option>
-    <option value="0.95">95% payout</option>
-    <option value="0.98" selected>98% payout</option>
-</select>
+        async function loadPreciousHistory() {
+            const res = await fetch('/history-precious');
+            const data = await res.json();
+            document.getElementById('preciousHistoryBox').textContent = JSON.stringify(data, null, 2);
+        }
 
-<button onclick="addPrecious()">Save Precious Entry</button>
+        function calcPreciousPayout() {
+            const metal = document.getElementById('preciousMetal').value;
+            const price = parseFloat(document.getElementById('preciousPrice').value);
+            const weight = parseFloat(document.getElementById('preciousWeight').value);
+            const unit = document.getElementById('preciousUnit').value;
+            const purity = parseFloat(document.getElementById('preciousPurity').value);
+            const refinery = document.getElementById('preciousRefinery').value;
 
-<pre id="preciousAddBox">Waiting for precious input...</pre>
+            const payoutEl = document.getElementById('payoutPercent');
+            const payoutRate = payoutEl ? parseFloat(payoutEl.value) : 0.98;
+
+            if (isNaN(price) || isNaN(weight) || isNaN(purity)) {
+                document.getElementById('preciousPayoutBox').textContent =
+                    JSON.stringify({ error: "Enter valid price, weight, and purity first." }, null, 2);
+                return;
+            }
+
+            let weightOz = weight;
+            if (unit === 'dwt') {
+                weightOz = weight / 20;
+            }
+
+            const grossValue = price * weightOz;
+            const pureValue = grossValue * (purity / 100);
+            const estimatedPayout = pureValue * payoutRate;
+
+            const result = {
+                metal: metal,
+                refinery: refinery,
+                unit: unit,
+                entered_weight: weight,
+                converted_weight_oz: Number(weightOz.toFixed(4)),
+                purity_percent: purity,
+                price_per_oz: price,
+                gross_value: Number(grossValue.toFixed(2)),
+                pure_value: Number(pureValue.toFixed(2)),
+                estimated_payout: Number(estimatedPayout.toFixed(2))
+            };
+
+            document.getElementById('preciousPayoutBox').textContent = JSON.stringify(result, null, 2);
+        }
     </script>
 </body>
 </html>
@@ -455,7 +551,8 @@ def add_precious(entry: PreciousEntry):
 
     gross_value = round(entry.price * weight_oz, 2)
     pure_value = round(gross_value * (entry.purity / 100), 2)
-    estimated_payout = round(pure_value * 0.98, 2)
+    payout_rate = 0.98
+    estimated_payout = round(pure_value * payout_rate, 2)
 
     return {
         "status": "saved",
