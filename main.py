@@ -44,7 +44,7 @@ def init_db():
                 )
             """)
           
-             CREATE TABLE IF NOT EXISTS precious (
+               CREATE TABLE IF NOT EXISTS precious (
                  id INTEGER PRIMARY KEY AUTOINCREMENT,
                  metal TEXT,
                  price REAL,
