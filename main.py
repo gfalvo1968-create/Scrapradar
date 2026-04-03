@@ -8,7 +8,7 @@ import numpy as np
 
 app = FastAPI()
 
-DB_NAME = "scrcrapradar”
+DB_NAME = "scrapradar.db"
 
 class PriceEntry(BaseModel):
     metal: str
