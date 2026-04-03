@@ -47,7 +47,6 @@ def init_db():
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
-            
           
              CREATE TABLE IF NOT EXISTS precious (
                  id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,7 +56,7 @@ def init_db():
                  unit TEXT,
                  purity REAL,
                  refinery TEXT,
-                 cost REAL,   -- 👈 ADD THIS
+                 cost REAL,   
                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
