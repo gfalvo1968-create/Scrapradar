@@ -8,18 +8,19 @@ import numpy as np
 
 app = FastAPI()
 
-DB_NAME = "scrapradar.db"
+DB_NAME = "scrapradar_v2.db"
 
 
 class PriceEntry(BaseModel):
     metal: str
     price: float
     yard: str
-
 class PreciousEntry(BaseModel):
     metal: str
     price: float
     weight: float
+    unit: str
+    purity: float
     refinery: str
 
 def init_db():
@@ -35,12 +36,14 @@ def init_db():
                 )
             """)
 
-            conn.execute("""
+                        conn.execute("""
                 CREATE TABLE IF NOT EXISTS precious_prices (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     metal TEXT NOT NULL,
                     price REAL NOT NULL,
                     weight REAL NOT NULL,
+                    unit TEXT NOT NULL,
+                    purity REAL NOT NULL,
                     refinery TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
@@ -133,7 +136,7 @@ def home():
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        input, button {
+        input, button, select {
             padding: 10px;
             margin: 6px 0;
             width: 100%;
@@ -243,12 +246,24 @@ def home():
         </div>
     </div>
 
-    <<div id="precious" class="section">
     <div class="card">
-        <h2>Precious / Refinery Market</h2>
-        <p>Gold, Silver, Platinum, Palladium, Iridium</p>
-        <pre id="preciousMarketBox">Use entries below to build refinery history.</pre>
-    </div>
+    <h2>Add Precious Entry</h2>
+
+    <input id="preciousMetal" placeholder="Metal (example: gold)" />
+    <input id="preciousPrice" placeholder="Price per troy oz (example: 2350.50)" type="number" step="0.01" />
+    <input id="preciousWeight" placeholder="Weight (example: 0.5 or 5)" type="number" step="0.01" />
+
+    <select id="preciousUnit">
+        <option value="oz">Troy Ounces (oz)</option>
+        <option value="dwt">Pennyweights (dwt)</option>
+    </select>
+
+    <input id="preciousPurity" placeholder="Purity % (example: 41.7 for 10K)" type="number" step="0.1" />
+    <input id="preciousRefinery" placeholder="Refinery name" />
+
+    <button onclick="addPrecious()">Save Precious Entry</button>
+    <pre id="preciousAddBox">Waiting for precious input...</pre>
+</div>
 
     <div class="card">
         <h2>Add Precious Entry</h2>
@@ -336,20 +351,40 @@ def home():
     const weight = parseFloat(document.getElementById('preciousWeight').value);
     const refinery = document.getElementById('preciousRefinery').value;
 
+    async function addPrecious() {
+    const metal = document.getElementById('preciousMetal').value;
+    const price = parseFloat(document.getElementById('preciousPrice').value);
+    const weight = parseFloat(document.getElementById('preciousWeight').value);
+    const unit = document.getElementById('preciousUnit').value;
+    const purity = parseFloat(document.getElementById('preciousPurity').value);
+    const refinery = document.getElementById('preciousRefinery').value;
+
     const res = await fetch('/add-precious', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ metal, price, weight, refinery })
+        body: JSON.stringify({ metal, price, weight, unit, purity, refinery })
     });
 
     const data = await res.json();
     document.getElementById('preciousAddBox').textContent = JSON.stringify(data, null, 2);
 }
 
-async function loadPreciousHistory() {
-    const res = await fetch('/history-precious');
+async function addPrecious() {
+    const metal = document.getElementById('preciousMetal').value;
+    const price = parseFloat(document.getElementById('preciousPrice').value);
+    const weight = parseFloat(document.getElementById('preciousWeight').value);
+    const unit = document.getElementById('preciousUnit').value;
+    const purity = parseFloat(document.getElementById('preciousPurity').value);
+    const refinery = document.getElementById('preciousRefinery').value;
+
+    const res = await fetch('/add-precious', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ metal, price, weight, unit, purity, refinery })
+    });
+
     const data = await res.json();
-    document.getElementById('preciousHistoryBox').textContent = JSON.stringify(data, null, 2);
+    document.getElementById('preciousAddBox').textContent = JSON.stringify(data, null, 2);
 }
 
 function calcPreciousPayout() {
@@ -364,16 +399,40 @@ function calcPreciousPayout() {
         return;
     }
 
-    const gross = price * weight;
-    const estimated_payout = gross * 0.98;
+    function calcPreciousPayout() {
+    const metal = document.getElementById('preciousMetal').value;
+    const price = parseFloat(document.getElementById('preciousPrice').value);
+    const weight = parseFloat(document.getElementById('preciousWeight').value);
+    const unit = document.getElementById('preciousUnit').value;
+    const purity = parseFloat(document.getElementById('preciousPurity').value);
+    const refinery = document.getElementById('preciousRefinery').value;
+
+    if (isNaN(price) || isNaN(weight) || isNaN(purity)) {
+        document.getElementById('preciousPayoutBox').textContent =
+            JSON.stringify({ error: "Enter valid price, weight, and purity first." }, null, 2);
+        return;
+    }
+
+    let weightOz = weight;
+    if (unit === 'dwt') {
+        weightOz = weight / 20;
+    }
+
+    const grossValue = price * weightOz;
+    const pureValue = grossValue * (purity / 100);
+    const estimatedPayout = pureValue * 0.98;
 
     const result = {
         metal: metal,
         refinery: refinery,
-        weight_oz: weight,
+        unit: unit,
+        entered_weight: weight,
+        converted_weight_oz: Number(weightOz.toFixed(4)),
+        purity_percent: purity,
         price_per_oz: price,
-        gross_value: Number(gross.toFixed(2)),
-        estimated_payout: Number(estimated_payout.toFixed(2))
+        gross_value: Number(grossValue.toFixed(2)),
+        pure_value: Number(pureValue.toFixed(2)),
+        estimated_payout: Number(estimatedPayout.toFixed(2))
     };
 
     document.getElementById('preciousPayoutBox').textContent = JSON.stringify(result, null, 2);
@@ -485,40 +544,35 @@ def get_history():
     
 @app.post("/add-precious")
 def add_precious(entry: PreciousEntry):
+    weight_oz = entry.weight / 20 if entry.unit == "dwt" else entry.weight
+
     with closing(sqlite3.connect(DB_NAME)) as conn:
         with conn:
             conn.execute("""
-                INSERT INTO precious_prices (metal, price, weight, refinery)
-                VALUES (?, ?, ?, ?)
-            """, (entry.metal, entry.price, entry.weight, entry.refinery))
+                INSERT INTO precious_prices (metal, price, weight, unit, purity, refinery)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                entry.metal,
+                entry.price,
+                entry.weight,
+                entry.unit,
+                entry.purity,
+                entry.refinery
+            ))
 
-    gross_value = round(entry.price * entry.weight, 2)
-    estimated_payout = round(gross_value * 0.98, 2)
-
-    return {
-        "status": "saved",
-        "metal": entry.metal,
-        "gross_value": gross_value,
-        "estimated_payout": estimated_payout
-    }
-
-
-@app.get("/history-precious")
-def get_precious_history():
-    with closing(sqlite3.connect(DB_NAME)) as conn:
-        conn.row_factory = sqlite3.Row
-        rows = conn.execute("""
-            SELECT id, metal, price, weight, refinery, created_at
-            FROM precious_prices
-            ORDER BY created_at DESC
-        """).fetchall()
-
-    return [dict(row) for row in rows]
+    gross_value = round(entry.price * weight_oz, 2)
+    pure_value = round(gross_value * (entry.purity / 100), 2)
+    estimated_payout = round(pure_value * 0.98, 2)
 
     return {
         "status": "saved",
         "metal": entry.metal,
+        "unit": entry.unit,
+        "entered_weight": entry.weight,
+        "converted_weight_oz": round(weight_oz, 4),
+        "purity_percent": entry.purity,
         "gross_value": gross_value,
+        "pure_value": pure_value,
         "estimated_payout": estimated_payout
     }
 
