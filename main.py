@@ -417,24 +417,7 @@ def home():
             });
         }
 
-@app.post("/add-precious")
-def add_precious(entry: PreciousEntry):
-    with closing(sqlite3.connect(DB_NAME)) as conn:
-        with conn:
-            conn.execute("""
-                INSERT INTO precious (metal, price, weight, unit, purity, refinery, cost)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (
-                entry.metal,
-                entry.price,
-                entry.weight,
-                entry.unit,
-                entry.purity,
-                entry.refinery,
-                entry.cost
-            ))
 
-    return {"status": "saved"}
 
        function calcPreciousPayout() {
     const metal = document.getElementById('preciousMetal').value;
