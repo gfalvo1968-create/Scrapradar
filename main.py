@@ -268,6 +268,7 @@ def home():
             </select>
 
             <input id="preciousPurity" placeholder="Purity % (example: 41.7 for 10K)" type="number" step="0.1" />
+           <input id="preciousCost" placeholder="What you paid (example: 180.00)" type="number" step="0.01" />
             <input id="preciousRefinery" placeholder="Refinery name" />
 
             <select id="payoutPercent">
@@ -420,47 +421,59 @@ def home():
             document.getElementById('preciousHistoryBox').textContent = JSON.stringify(data, null, 2);
         }
 
-        function calcPreciousPayout() {
-            const metal = document.getElementById('preciousMetal').value;
-            const price = parseFloat(document.getElementById('preciousPrice').value);
-            const weight = parseFloat(document.getElementById('preciousWeight').value);
-            const unit = document.getElementById('preciousUnit').value;
-            const purity = parseFloat(document.getElementById('preciousPurity').value);
-            const refinery = document.getElementById('preciousRefinery').value;
+       function calcPreciousPayout() {
+    const metal = document.getElementById('preciousMetal').value;
+    const price = parseFloat(document.getElementById('preciousPrice').value);
+    const weight = parseFloat(document.getElementById('preciousWeight').value);
+    const unit = document.getElementById('preciousUnit').value;
+    const purity = parseFloat(document.getElementById('preciousPurity').value);
+    const cost = parseFloat(document.getElementById('preciousCost').value);
+    const refinery = document.getElementById('preciousRefinery').value;
 
-            const payoutEl = document.getElementById('payoutPercent');
-            const payoutRate = payoutEl ? parseFloat(payoutEl.value) : 0.98;
+    const payoutEl = document.getElementById('payoutPercent');
+    const payoutRate = payoutEl ? parseFloat(payoutEl.value) : 0.98;
 
-            if (isNaN(price) || isNaN(weight) || isNaN(purity)) {
-                document.getElementById('preciousPayoutBox').textContent =
-                    JSON.stringify({ error: "Enter valid price, weight, and purity first." }, null, 2);
-                return;
-            }
+    if (isNaN(price) || isNaN(weight) || isNaN(purity)) {
+        document.getElementById('preciousPayoutBox').textContent =
+            JSON.stringify({ error: "Enter valid price, weight, and purity first." }, null, 2);
+        return;
+    }
 
-            let weightOz = weight;
-            if (unit === 'dwt') {
-                weightOz = weight / 20;
-            }
+    let weightOz = weight;
+    if (unit === 'dwt') {
+        weightOz = weight / 20;
+    }
 
-            const grossValue = price * weightOz;
-            const pureValue = grossValue * (purity / 100);
-            const estimatedPayout = pureValue * payoutRate;
+    const grossValue = price * weightOz;
+    const pureValue = grossValue * (purity / 100);
+    const estimatedPayout = pureValue * payoutRate;
 
-            const result = {
-                metal: metal,
-                refinery: refinery,
-                unit: unit,
-                entered_weight: weight,
-                converted_weight_oz: Number(weightOz.toFixed(4)),
-                purity_percent: purity,
-                price_per_oz: price,
-                gross_value: Number(grossValue.toFixed(2)),
-                pure_value: Number(pureValue.toFixed(2)),
-                estimated_payout: Number(estimatedPayout.toFixed(2))
-            };
+    let profit = null;
+    let roi_percent = null;
 
-            document.getElementById('preciousPayoutBox').textContent = JSON.stringify(result, null, 2);
-        }
+    if (!isNaN(cost) && cost > 0) {
+        profit = estimatedPayout - cost;
+        roi_percent = (profit / cost) * 100;
+    }
+
+    const result = {
+        metal: metal,
+        refinery: refinery,
+        unit: unit,
+        entered_weight: weight,
+        converted_weight_oz: Number(weightOz.toFixed(4)),
+        purity_percent: purity,
+        price_per_oz: price,
+        gross_value: Number(grossValue.toFixed(2)),
+        pure_value: Number(pureValue.toFixed(2)),
+        estimated_payout: Number(estimatedPayout.toFixed(2)),
+        cost_paid: isNaN(cost) ? null : Number(cost.toFixed(2)),
+        profit: profit === null ? null : Number(profit.toFixed(2)),
+        roi_percent: roi_percent === null ? null : Number(roi_percent.toFixed(2))
+    };
+
+    document.getElementById('preciousPayoutBox').textContent = JSON.stringify(result, null, 2);
+}
     </script>
 </body>
 </html>
