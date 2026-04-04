@@ -59,27 +59,23 @@ def home():
     <div id="value" style="margin-top:10px;"></div>
 </div>
 
-<pre <div id="stats" style="margin-top:20px; font-size:18px;"></div>
-</pre>
+<div id="stats" style="margin-top:20px; font-size:18px;"></div>
 
 <canvas id="chart" style="margin-top:20px; max-width:100%; background:#111;"></canvas>
 
 <script>
 let chart;
-
 async function loadData() {
     try {
         const res = await fetch('/market?nocache=' + Date.now());
         const data = await res.json();
 
-        // Show JSON document.getElementById('stats').innerHTML = `
-    <div>📊 Current Price: <b>$${data.current}</b></div>
-    <div>📈 Trend: <b>${(data.trend * 100).toFixed(2)}%</b></div>
-    <div>🔮 Forecast: ${data.forecast.join(', ')}</div>
-`;
-        
+        document.getElementById('stats').innerHTML = `
+            <div>📊 Current Price: <b>$${data.current}</b></div>
+            <div>📈 Trend: <b>${(data.trend * 100).toFixed(2)}%</b></div>
+            <div>🔮 Forecast: ${data.forecast.join(', ')}</div>
+        `;
 
-        // Draw chart
         const ctx = document.getElementById('chart').getContext('2d');
 
         if (chart) {
@@ -120,9 +116,11 @@ async function loadData() {
         });
 
     } catch (err) {
-        document.getElementById('output').innerText = "Error loading data";
+        document.getElementById('stats').innerText = "Error loading data";
     }
 }
+
+         
 
 function calcValue() {
     const lbs = parseFloat(document.getElementById('lbs').value);
@@ -133,11 +131,16 @@ function calcValue() {
         return;
     }
 
+    if (!chart) {
+        output.innerText = "Load market data first";
+        return;
+    }
+
     const current = chart.data.datasets[0].data[0];
     const total = (lbs * current).toFixed(2);
 
     output.innerText = `💰 Estimated Value: $${total}`;
-} 
+}
 
 </script>
 
