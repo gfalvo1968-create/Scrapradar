@@ -267,8 +267,26 @@ async function loadHistory() {
     const res = await fetch('/history?nocache=' + Date.now());
     const data = await res.json();
 
-    document.getElementById('historyBox').innerText =
-        JSON.stringify(data, null, 2);
+    if (!data.length) {
+        document.getElementById('historyBox').innerHTML = "No history yet...";
+        return;
+    }
+
+    let html = "<b>Recent Loads</b><br><br>";
+
+    data.forEach(item => {
+        html += `
+            <div style="margin-bottom:12px; border-bottom:1px solid #333; padding-bottom:8px;">
+                🪙 <b>${item.metal}</b><br>
+                ⚖️ Pounds: ${item.pounds}<br>
+                💵 Price/lb: $${Number(item.price_per_lb).toFixed(2)}<br>
+                💰 Total: $${Number(item.total).toFixed(2)}<br>
+                🕒 ${item.created_at}
+            </div>
+        `;
+    });
+
+    document.getElementById('historyBox').innerHTML = html;
 }
 loadData();
 
