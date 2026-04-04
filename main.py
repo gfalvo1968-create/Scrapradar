@@ -58,6 +58,9 @@ def home():
     <option value="aluminum">Aluminum</option>
 </select>
 
+<input id="customPrice" placeholder="Override price (optional)"
+    style="padding:8px; font-size:16px; margin-left:8px;" />
+
     <button onclick="calcValue()" style="padding:10px;">
         Calculate Value
     </button>
@@ -144,6 +147,11 @@ function calcValue() {
     }
 
     let current = chart.data.datasets[0].data[0];
+const custom = parseFloat(document.getElementById('customPrice').value);
+
+if (custom && custom > 0) {
+    current = custom;
+}
 
     if (metal === 'brass') {
         current = current * 0.72;
