@@ -111,14 +111,13 @@ def home():
     <input id="customPrice" placeholder="Override price"
     style="padding:8px; font-size:16px;" />
 
-    <!-- 💥 THIS IS YOUR NEW ONE -->
     <input id="cost" placeholder="Your cost/lb"
     style="padding:8px; font-size:16px;" />
 
     <button onclick="calcValue()" style="padding:10px;">
         Calculate Value
     </button>
-
+    
 </div>
 
 <div id="stats" style="margin-top:20px; font-size:18px;"></div>
