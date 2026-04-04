@@ -197,7 +197,7 @@ async function loadData() {
 
          
 
-function calcValue() {
+async function calcValue() {
     const lbs = parseFloat(document.getElementById('lbs').value);
     const metal = document.getElementById('metalType').value;
     const output = document.getElementById('value');
