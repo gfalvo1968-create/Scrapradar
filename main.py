@@ -48,13 +48,18 @@ def home():
     Load Market Data
 </button>
 
-<pre id="output" style="
-    margin-top:20px;
-    background:#000;
-    padding:10px;
-    color:#0f0;
-">
-Waiting...
+<div style="margin-top:20px;">
+    <input id="lbs" placeholder="Enter pounds"
+        style="padding:8px; font-size:16px;" />
+
+    <button onclick="calcValue()" style="padding:10px;">
+        Calculate Value
+    </button>
+
+    <div id="value" style="margin-top:10px;"></div>
+</div>
+
+<pre <div id="stats" style="margin-top:20px; font-size:18px;"></div>
 </pre>
 
 <canvas id="chart" style="margin-top:20px; max-width:100%; background:#111;"></canvas>
@@ -67,9 +72,12 @@ async function loadData() {
         const res = await fetch('/market?nocache=' + Date.now());
         const data = await res.json();
 
-        // Show JSON
-        document.getElementById('output').innerText =
-            JSON.stringify(data, null, 2);
+        // Show JSON document.getElementById('stats').innerHTML = `
+    <div>📊 Current Price: <b>$${data.current}</b></div>
+    <div>📈 Trend: <b>${(data.trend * 100).toFixed(2)}%</b></div>
+    <div>🔮 Forecast: ${data.forecast.join(', ')}</div>
+`;
+        
 
         // Draw chart
         const ctx = document.getElementById('chart').getContext('2d');
@@ -115,6 +123,22 @@ async function loadData() {
         document.getElementById('output').innerText = "Error loading data";
     }
 }
+
+function calcValue() {
+    const lbs = parseFloat(document.getElementById('lbs').value);
+    const output = document.getElementById('value');
+
+    if (!lbs || lbs <= 0) {
+        output.innerText = "Enter valid weight";
+        return;
+    }
+
+    const current = chart.data.datasets[0].data[0];
+    const total = (lbs * current).toFixed(2);
+
+    output.innerText = `💰 Estimated Value: $${total}`;
+} 
+
 </script>
 
 </body>
