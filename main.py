@@ -134,8 +134,7 @@ def home():
     color:#0f0;
 ">History will show here...</pre>
 
-<div id="value" style="margin-top:10px;"></div>
-
+<div id="stats" style="margin-top:20px; font-size:18px;"></div>
 <canvas id="chart" style="margin-top:20px; max-width:100%; background:#111;"></canvas>
 
 <script>
