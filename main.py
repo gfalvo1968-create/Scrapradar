@@ -1,10 +1,59 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 import yfinance as yf
+import sqlite3
 
 app = FastAPI()
 
 # ---------------- MARKET API ----------------
+DB_NAME = "scrapradar_history.db"
+
+def init_db():
+    conn = sqlite3.connect(DB_NAME)
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            metal TEXT,
+            pounds REAL,
+            price_per_lb REAL,
+            total REAL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+init_db()
+
+@app.get("/save-history")
+def save_history(metal: str, pounds: float, price: float, total: float):
+    conn = sqlite3.connect(DB_NAME)
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO history (metal, pounds, price_per_lb, total)
+        VALUES (?, ?, ?, ?)
+    """, (metal, pounds, price, total))
+    conn.commit()
+    conn.close()
+
+    return {"status: saved”}
+            
+@app.get("/history")
+def get_history():
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    rows = cur.execute("""
+        SELECT id, metal, pounds, price_per_lb, total, created_at
+        FROM history
+        ORDER BY id DESC
+        LIMIT 20
+    """).fetchall()
+    conn.close()
+
+    return [dict(row) for row in rows]
+            
 @app.get("/market")
 def market():
     ticker = yf.Ticker("HG=F")
@@ -69,6 +118,20 @@ def home():
 </div>
 
 <div id="stats" style="margin-top:20px; font-size:18px;"></div>
+
+<div style="margin-top:20px;">
+    <button onclick="saveCalc()" style="padding:10px;">Save To History</button>
+    <button onclick="loadHistory()" style="padding:10px; margin-left:8px;">Load History</button>
+</div>
+
+<pre id="historyBox" style="
+    margin-top:20px;
+    background:#000;
+    padding:10px;
+    color:#0f0;
+">History will show here...</pre>
+
+<div id="value" style="margin-top:10px;"></div>
 
 <canvas id="chart" style="margin-top:20px; max-width:100%; background:#111;"></canvas>
 
@@ -162,6 +225,50 @@ if (custom && custom > 0) {
     const total = (lbs * current).toFixed(2);
 
     output.innerText = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb`;
+}
+
+async function saveCalc() {
+    const lbs = parseFloat(document.getElementById('lbs').value);
+    const metal = document.getElementById('metalType').value;
+    const output = document.getElementById('value');
+
+    if (!lbs || lbs <= 0) {
+        output.innerText = "Enter valid weight first";
+        return;
+    }
+
+    if (!chart) {
+        output.innerText = "Load market data first";
+        return;
+    }
+
+    let current = chart.data.datasets[0].data[0];
+    const custom = parseFloat(document.getElementById('customPrice').value);
+
+    if (custom && custom > 0) {
+        current = custom;
+    } else if (metal === 'brass') {
+        current = current * 0.72;
+    } else if (metal === 'aluminum') {
+        current = current * 0.18;
+    }
+
+    const total = (lbs * current).toFixed(2);
+
+    const res = await fetch(
+        `/save-history?metal=${encodeURIComponent(metal)}&pounds=${lbs}&price=${current}&total=${total}`
+    );
+    const data = await res.json();
+
+    output.innerText = `Saved ${metal} load to history`;
+}
+
+async function loadHistory() {
+    const res = await fetch('/history?nocache=' + Date.now());
+    const data = await res.json();
+
+    document.getElementById('historyBox').innerText =
+        JSON.stringify(data, null, 2);
 }
 loadData();
 
