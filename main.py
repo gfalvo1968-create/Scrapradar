@@ -256,25 +256,7 @@ async function saveCalc() {
         current = current * 0.18;
     }
 
-    const cost = parseFloat(document.getElementById('cost')?.value);
-
-let profitText = "";
-
-if (cost && cost > 0) {
-    const profit = ((current - cost) * lbs).toFixed(2);
-    profitText = `\n📈 Profit: $${profit}`;
-}
-
-const cost = parseFloat(document.getElementById('cost')?.value);
-
-let profitText = "";
-
-if (cost && cost > 0) {
-    const profit = ((current - cost) * lbs).toFixed(2);
-    profitText = ` | 📈 Profit: $${profit}`;
-}
-
-output.innerText = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
+    const total = (lbs * current).toFixed(2);
 
     const res = await fetch(
         `/save-history?metal=${encodeURIComponent(metal)}&pounds=${lbs}&price=${current}&total=${total}`
