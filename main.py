@@ -37,7 +37,7 @@ def save_history(metal: str, pounds: float, price: float, total: float):
     conn.commit()
     conn.close()
 
-    return {"status: saved”}
+    return {"status": "saved"}
             
 @app.get("/history")
 def get_history():
