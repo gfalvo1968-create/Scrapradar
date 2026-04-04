@@ -110,6 +110,8 @@ def home():
 <input id="customPrice" placeholder="Override price (optional)"
     style="padding:8px; font-size:16px; margin-left:8px;" />
 
+<input id="cost" placeholder="Your cost/lb" />
+
     <button onclick="calcValue()" style="padding:10px;">
         Calculate Value
     </button>
@@ -253,7 +255,16 @@ async function saveCalc() {
         current = current * 0.18;
     }
 
-    const total = (lbs * current).toFixed(2);
+    const cost = parseFloat(document.getElementById('cost')?.value);
+
+let profitText = "";
+
+if (cost && cost > 0) {
+    const profit = ((current - cost) * lbs).toFixed(2);
+    profitText = `\n📈 Profit: $${profit}`;
+}
+
+output.innerText = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
 
     const res = await fetch(
         `/save-history?metal=${encodeURIComponent(metal)}&pounds=${lbs}&price=${current}&total=${total}`
