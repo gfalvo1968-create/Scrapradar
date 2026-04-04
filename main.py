@@ -52,6 +52,12 @@ def home():
     <input id="lbs" placeholder="Enter pounds"
         style="padding:8px; font-size:16px;" />
 
+<select id="metalType" style="padding:8px; font-size:16px; margin-left:8px;">
+    <option value="copper" selected>Copper</option>
+    <option value="brass">Brass</option>
+    <option value="aluminum">Aluminum</option>
+</select>
+
     <button onclick="calcValue()" style="padding:10px;">
         Calculate Value
     </button>
@@ -124,6 +130,7 @@ async function loadData() {
 
 function calcValue() {
     const lbs = parseFloat(document.getElementById('lbs').value);
+    const metal = document.getElementById('metalType').value;
     const output = document.getElementById('value');
 
     if (!lbs || lbs <= 0) {
@@ -136,11 +143,19 @@ function calcValue() {
         return;
     }
 
-    const current = chart.data.datasets[0].data[0];
+    let current = chart.data.datasets[0].data[0];
+
+    if (metal === 'brass') {
+        current = current * 0.72;
+    } else if (metal === 'aluminum') {
+        current = current * 0.18;
+    }
+
     const total = (lbs * current).toFixed(2);
 
-    output.innerText = `💰 Estimated Value: $${total}`;
+    output.innerText = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb`;
 }
+loadData();
 
 </script>
 
