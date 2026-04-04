@@ -97,26 +97,28 @@ def home():
     Load Market Data
 </button>
 
-<div style="margin-top:20px;">
+<div style="margin-top:20px; display:flex; flex-wrap:wrap; gap:8px;">
+
     <input id="lbs" placeholder="Enter pounds"
-        style="padding:8px; font-size:16px;" />
+    style="padding:8px; font-size:16px;" />
 
-<select id="metalType" style="padding:8px; font-size:16px; margin-left:8px;">
-    <option value="copper" selected>Copper</option>
-    <option value="brass">Brass</option>
-    <option value="aluminum">Aluminum</option>
-</select>
+    <select id="metalType" style="padding:8px; font-size:16px;">
+        <option value="copper" selected>Copper</option>
+        <option value="brass">Brass</option>
+        <option value="aluminum">Aluminum</option>
+    </select>
 
-<input id="customPrice" placeholder="Override price (optional)"
-    style="padding:8px; font-size:16px; margin-left:8px;" />
+    <input id="customPrice" placeholder="Override price"
+    style="padding:8px; font-size:16px;" />
 
-<input id="cost" placeholder="Your cost/lb" />
+    <!-- 💥 THIS IS YOUR NEW ONE -->
+    <input id="cost" placeholder="Your cost/lb"
+    style="padding:8px; font-size:16px;" />
 
     <button onclick="calcValue()" style="padding:10px;">
         Calculate Value
     </button>
 
-    <div id="value" style="margin-top:10px;"></div>
 </div>
 
 <div id="stats" style="margin-top:20px; font-size:18px;"></div>
