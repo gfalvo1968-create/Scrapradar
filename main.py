@@ -234,10 +234,9 @@ let profitText = "";
 if (cost && cost > 0) {
     const profit = ((current - cost) * lbs).toFixed(2);
     profitText = `\n📈 Profit: $${profit}`;
-}
-
-
-    output.innerText = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
+    }
+output.innerText = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
+    
 }
 
 async function saveCalc() {
