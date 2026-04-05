@@ -117,6 +117,8 @@ def home():
     <button onclick="calcValue()" style="padding:10px;">
         Calculate Value
     </button>
+
+     const output = document.getElementById('value');
     
 </div>
 
