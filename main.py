@@ -258,18 +258,31 @@ def home():
                     percent > 0 ? "#ff0" :
                     "#f00";
 
-                const percent = (((current - cost) / cost) * 100).toFixed(2);
+                const percent = Number((((current - cost) / cost) * 100).toFixed(2));
                 let percentColor = ...
                 let strength = ...
-                
                 profitText = ` | 📈 <span style="color:${color}">Profit: $${profit}</span>`;
+profitText += `<br>⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`;
+profitText += `<br>📊 <span style="color:${percentColor}; font-weight:bold;">Margin: ${percent}%</span> ${strength}`;
 
-                profitText += `<br>⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`;
+let recommendation = "";
 
-                profitText += `<br><span style="font-size:16px;">📊 <span style="color:${percentColor}; font-weight:bold;">Margin: ${percent}%</span> ${strength}</span>`;
+if (rawProfit < 0) {
+    recommendation = `<br>🚫 Recommendation: <span style="color:#f00; font-weight:bold;">PASS</span>`;
+} else if (percent >= 10) {
+    recommendation = `<br>✅ Recommendation: <span style="color:#0ff; font-weight:bold;">SELL NOW</span>`;
+} else if (percent >= 3) {
+    recommendation = `<br>👍 Recommendation: <span style="color:#0f0; font-weight:bold;">GOOD DEAL</span>`;
+} else if (percent > 0) {
+    recommendation = `<br>⏳ Recommendation: <span style="color:#ff0; font-weight:bold;">HOLD / THIN MARGIN</span>`;
+}
 
-                if (rawProfit < 0) {
-                    profitText += ` | ⚠️ Losing money`;
+profitText += recommendation;
+
+if (rawProfit < 0) {
+    profitText += ` | ⚠️ Losing money`;
+}
+            .   
                 }
             }
 
