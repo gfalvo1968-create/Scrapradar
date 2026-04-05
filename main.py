@@ -203,49 +203,78 @@ def home():
                 document.getElementById('stats').innerText = "Error loading data";
             }
         }
+async function calcValue() {
+    const lbs = parseFloat(document.getElementById('lbs').value);
+    const metal = document.getElementById('metalType').value;
+    const output = document.getElementById('value');
 
-        async function calcValue() {
-            const lbs = parseFloat(document.getElementById('lbs').value);
-            const metal = document.getElementById('metalType').value;
-            const output = document.getElementById('value');
+    if (!output) return;
 
-            if (!output) return;
+    if (!lbs || lbs <= 0) {
+        output.innerText = "Enter valid weight";
+        return;
+    }
 
-            if (!lbs || lbs <= 0) {
-                output.innerText = "Enter valid weight";
-                return;
-            }
+    if (!chart) {
+        output.innerText = "Load market data first";
+        return;
+    }
 
-            if (!chart) {
-                output.innerText = "Load market data first";
-                return;
-            }
+    let current = chart.data.datasets[0].data[0];
+    const custom = parseFloat(document.getElementById('customPrice').value);
 
-            let current = chart.data.datasets[0].data[0];
-            const custom = parseFloat(document.getElementById('customPrice').value);
+    if (custom && custom > 0) {
+        current = custom;
+    } else if (metal === 'brass') {
+        current = current * 0.72;
+    } else if (metal === 'aluminum') {
+        current = current * 0.18;
+    }
 
-            if (custom && custom > 0) {
-                current = custom;
-            } else if (metal === 'brass') {
-                current = current * 0.72;
-            } else if (metal === 'aluminum') {
-                current = current * 0.18;
-            }
+    const total = (lbs * current).toFixed(2);
+    const cost = parseFloat(document.getElementById('cost')?.value);
 
-            const total = (lbs * current).toFixed(2);
+    let profitText = "";
 
-            const cost = parseFloat(document.getElementById('cost')?.value);
-            let profitText = "";
+    if (cost && cost > 0) {
+        const profit = ((current - cost) * lbs).toFixed(2);
+        const percent = (((current - cost) / cost) * 100).toFixed(2);
+        let color = profit >= 0 ? "#0f0" : "#f00";
+
+        profitText = ` | 📈 <span style="color:${color}">Profit: $${profit} (${percent}%)</span>`;
+        profitText += ` | ⚖️ Break-even: $${cost.toFixed(2)}`;
+
+        if (profit < 0) {
+            profitText += ` | ⚠️ Losing money`;
+        }
+    }
+
+    output.innerHTML = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
+
+    output.style.transition = "0.3s";
+    output.style.transform = "scale(1.02)";
+    setTimeout(() => {
+        output.style.transform = "scale(1)";
+    }, 200);
+}
+        
+
+let profitText = "";
 
 if (cost && cost > 0) {
     const profit = ((current - cost) * lbs).toFixed(2);
+    const percent = (((current - cost) / cost) * 100).toFixed(2);
     let color = profit >= 0 ? "#0f0" : "#f00";
-    profitText = ` | 📈 <span style="color:${color}">Profit: $${profit}</span>`;
+    profitText = ` | 📈 <span style="color:${color}">Profit: $${profit} (${percent}%)</span>`;
 }
 
 output.innerHTML = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
 
-  
+ output.style.transition = "0.3s";
+output.style.transform = "scale(1.02)";
+setTimeout(() => {
+    output.style.transform = "scale(1)";
+}, 200); 
         }
 
         async function saveCalc() {
