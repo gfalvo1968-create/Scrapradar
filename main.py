@@ -225,8 +225,16 @@ if (custom && custom > 0) {
     }
 
     const total = (lbs * current).toFixed(2);
+      const cost = parseFloat(document.getElementById('cost')?.value);
 
-    output.innerText = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb`;
+      let profitText = "";
+
+      if (cost && cost > 0) {
+      const profit = ((current - cost) * lbs).toFixed(2);
+      profitText = `\n📈 Profit: $${profit}`;
+}
+
+    output.innerText = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
 }
 
 async function saveCalc() {
