@@ -241,10 +241,10 @@ def home():
                 const rawProfit = (current - cost) * lbs;
                 const profit = rawProfit.toFixed(2);
                 const percent = (((current - cost) / cost) * 100).toFixed(2);
+                let strength = percent > 10 ? "🔥 Strong" : percent > 3 ? "👍 Solid" : percent > 0 ? "⚠️ Thin" : "❌ Loss";
                 const color = rawProfit >= 0 ? "#0f0" : "#f00";
-
-                profitText = ` | 📈 <span style="color:${color}">Profit: $${profit} (${percent}%)</span>`;
-                profitText += ` | ⚖️ Break-even: $${cost.toFixed(2)}`;
+                profitText = ` | 📈 <span style="color:${color}">Profit: $${profit} (${percent}%) ${strength}</span>`;
+                profitText += ` | ⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`; 
 
                 if (rawProfit < 0) {
                     profitText += ` | ⚠️ Losing money`;
