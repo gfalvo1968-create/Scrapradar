@@ -262,7 +262,7 @@ def home():
 
                 profitText += `<br>⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`;
 
-                profitText += `<br>📊 <span style="color:${percentColor}">Margin: ${percent}%</span> ${strength}`;
+                profitText += `<br><span style="font-size:16px;">📊 <span style="color:${percentColor}; font-weight:bold;">Margin: ${percent}%</span> ${strength}</span>`;
 
                 if (rawProfit < 0) {
                     profitText += ` | ⚠️ Losing money`;
@@ -271,6 +271,12 @@ def home():
 
             output.innerHTML = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
 
+            if (rawProfit > 0) {
+            output.style.boxShadow = "0 0 10px #0f0";
+            } else {
+            output.style.boxShadow = "0 0 10px #f00";
+            }
+            
             output.style.transition = "0.3s";
             output.style.transform = "scale(1.02)";
             setTimeout(() => {
