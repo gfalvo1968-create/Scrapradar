@@ -258,6 +258,10 @@ def home():
                     percent > 0 ? "#ff0" :
                     "#f00";
 
+                const percent = (((current - cost) / cost) * 100).toFixed(2);
+                let percentColor = ...
+                let strength = ...
+                
                 profitText = ` | 📈 <span style="color:${color}">Profit: $${profit}</span>`;
 
                 profitText += `<br>⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`;
