@@ -237,12 +237,15 @@ def home():
             const cost = parseFloat(document.getElementById('cost')?.value);
             let profitText = "";
 
-            if (cost && cost > 0) {
-                const profit = ((current - cost) * lbs).toFixed(2);
-                profitText = ` | 📈 Profit: $${profit}`;
-            }
+if (cost && cost > 0) {
+    const profit = ((current - cost) * lbs).toFixed(2);
+    let color = profit >= 0 ? "#0f0" : "#f00";
+    profitText = ` | 📈 <span style="color:${color}">Profit: $${profit}</span>`;
+}
 
-            output.innerText = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
+output.innerHTML = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
+
+  
         }
 
         async function saveCalc() {
