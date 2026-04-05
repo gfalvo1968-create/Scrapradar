@@ -257,6 +257,15 @@ async function calcValue() {
         output.style.transform = "scale(1)";
     }, 200);
 }
+
+    output.innerHTML = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
+
+    output.style.transition = "0.3s";
+    output.style.transform = "scale(1.02)";
+    setTimeout(() => {
+        output.style.transform = "scale(1)";
+    }, 200);
+}
         
 
 let profitText = "";
