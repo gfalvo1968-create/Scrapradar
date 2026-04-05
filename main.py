@@ -118,7 +118,7 @@ def home():
         </button>
     </div>
 
-    <div id="value" style="margin-top: 14px; font-size: 18px;"></div>
+    <div id="value" style="margin-top: 14px; font-size: 18px; line-height: 1.5;"></div>
 
     <div id="stats" style="margin-top: 20px; font-size: 18px;"></div>
 
@@ -241,10 +241,25 @@ def home():
                 const rawProfit = (current - cost) * lbs;
                 const profit = rawProfit.toFixed(2);
                 const percent = (((current - cost) / cost) * 100).toFixed(2);
-                let strength = percent > 10 ? "🔥 Strong" : percent > 3 ? "👍 Solid" : percent > 0 ? "⚠️ Thin" : "❌ Loss";
+
                 const color = rawProfit >= 0 ? "#0f0" : "#f00";
-                profitText = ` | 📈 <span style="color:${color}">Profit: $${profit} (${percent}%) ${strength}</span>`;
-                profitText += ` | ⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`; 
+
+                let strength =
+                    rawProfit < 0 ? "❌ Loss" :
+                    percent > 10 ? "🔥 Strong" :
+                    percent > 3 ? "👍 Solid" :
+                    percent > 0 ? "⚠️ Thin" :
+                    "➖ Flat";
+
+                let percentColor =
+                    rawProfit < 0 ? "#f00" :
+                    percent > 5 ? "#0ff" :
+                    percent > 2 ? "#0f0" :
+                    percent > 0 ? "#ff0" :
+                    "#f00";
+
+                profitText = ` | 📈 <span style="color:${color}">Profit: $${profit} (<span style="color:${percentColor}">${percent}%</span>) ${strength}</span>`;
+                profitText += ` | ⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`;
 
                 if (rawProfit < 0) {
                     profitText += ` | ⚠️ Losing money`;
