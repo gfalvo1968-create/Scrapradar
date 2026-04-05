@@ -258,8 +258,11 @@ def home():
                     percent > 0 ? "#ff0" :
                     "#f00";
 
-                profitText = ` | 📈 <span style="color:${color}">Profit: $${profit} (<span style="color:${percentColor}">${percent}%</span>) ${strength}</span>`;
-                profitText += ` | ⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`;
+                profitText = ` | 📈 <span style="color:${color}">Profit: $${profit}</span>`;
+
+                profitText += `<br>⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`;
+
+                profitText += `<br>📊 <span style="color:${percentColor}">Margin: ${percent}%</span> ${strength}`;
 
                 if (rawProfit < 0) {
                     profitText += ` | ⚠️ Losing money`;
