@@ -38,22 +38,33 @@ def save_history(metal: str, pounds: float, price: float, total: float):
     """, (metal, pounds, price, total))
     conn.commit()
     conn.close()
-    return {"status": "saved"}
+    return {
+    "history": [dict(row) for row in rows],
+    "best_price": best_price,
+    "best_total": best_total
+}
 
 
 @app.get("/history")
 def get_history():
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    rows = cur.execute("""
-        SELECT id, metal, pounds, price_per_lb, total, created_at
-        FROM history
-        ORDER BY id DESC
-        LIMIT 20
-    """).fetchall()
-    conn.close()
-    return [dict(row) for row in rows]
+    cur = conn.cursor()rows = cur.execute("""
+    SELECT id, metal, pounds, price_per_lb, total, created_at
+    FROM history
+    ORDER BY id DESC
+    LIMIT 20
+""").fetchall()
+
+best_price = cur.execute("""
+    SELECT MAX(price_per_lb) FROM history
+""").fetchone()[0]
+
+best_total = cur.execute("""
+    SELECT MAX(total) FROM history
+""").fetchone()[0]
+     conn.close()
+     return [dict(row) for row in rows]
 
 
 @app.get("/market")
@@ -332,13 +343,31 @@ def home():
         }
 
         async function loadHistory() {
-            const res = await fetch('/history?nocache=' + Date.now());
-            const data = await res.json();
+             const res = await fetch('/history');
+             const data = await res.json();
 
-            if (!data.length) {
-                document.getElementById('historyBox').innerHTML = "No history yet...";
-                return;
-            }
+             let html = `
+                  <div style="padding:10px; margin-bottom:10px; border:1px solid #0f0;">
+                   🏆 Best Price Seen: $${data.best_price?.toFixed(2) || '0.00'}<br>
+                   💰 Highest Load Value: $${data.best_total?.toFixed(2) || '0.00'}
+                  </div>
+    `;
+
+             data.history.forEach(item => {
+             html += `
+            <div>
+                🪙 ${item.metal}<br>
+                ⚖️ Pounds: ${item.pounds}<br>
+                💵 Price/lb: $${item.price_per_lb}<br>
+                💰 Total: $${item.total}<br>
+                🕒 ${item.created_at}
+            </div>
+            <hr>
+        `;
+    });
+
+    document.getElementById('history').innerHTML = html;
+}
 
             let html = "<b>Recent Loads</b><br><br>";
 
