@@ -91,55 +91,55 @@ def home():
 
     <h1>ScrapRadar Dashboard</h1>
 
-    <button onclick="loadData()" style="padding: 10px; font-size: 16px; border-radius: 20px;">
+    <button onclick="loadData()" style="padding:10px; font-size:16px; border-radius:20px;">
         Load Market Data
     </button>
 
-    <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px;">
+    <div style="margin-top:20px; display:flex; flex-wrap:wrap; gap:8px;">
         <input id="lbs" placeholder="Enter pounds"
-            style="padding: 8px; font-size: 16px; border-radius: 10px;" />
+            style="padding:8px; font-size:16px; border-radius:10px;" />
 
         <select id="metalType"
-            style="padding: 8px; font-size: 16px; border-radius: 20px;">
+            style="padding:8px; font-size:16px; border-radius:20px;">
             <option value="copper" selected>Copper</option>
             <option value="brass">Brass</option>
             <option value="aluminum">Aluminum</option>
         </select>
 
         <input id="customPrice" placeholder="Override price"
-            style="padding: 8px; font-size: 16px; border-radius: 10px;" />
+            style="padding:8px; font-size:16px; border-radius:10px;" />
 
         <input id="cost" placeholder="Your cost/lb"
-            style="padding: 8px; font-size: 16px; border-radius: 10px;" />
+            style="padding:8px; font-size:16px; border-radius:10px;" />
 
         <button onclick="calcValue()"
-            style="padding: 10px; border-radius: 20px;">
+            style="padding:10px; border-radius:20px;">
             Calculate Value
         </button>
     </div>
 
-    <div id="value" style="margin-top: 14px; font-size: 18px; line-height: 1.5;"></div>
+    <div id="value" style="margin-top:16px; font-size:18px; line-height:1.6;"></div>
 
-    <div id="stats" style="margin-top: 20px; font-size: 18px;"></div>
+    <div id="stats" style="margin-top:20px; font-size:18px;"></div>
 
-    <div style="margin-top: 20px;">
-        <button onclick="saveCalc()" style="padding: 10px; border-radius: 20px;">
+    <div style="margin-top:20px;">
+        <button onclick="saveCalc()" style="padding:10px; border-radius:20px;">
             Save To History
         </button>
 
-        <button onclick="loadHistory()" style="padding: 10px; margin-left: 8px; border-radius: 20px;">
+        <button onclick="loadHistory()" style="padding:10px; margin-left:8px; border-radius:20px;">
             Load History
         </button>
     </div>
 
     <div id="historyBox" style="
-        margin-top: 20px;
-        background: #000;
-        padding: 10px;
-        color: #0f0;
+        margin-top:20px;
+        background:#000;
+        padding:10px;
+        color:#0f0;
     ">History will show here...</div>
 
-    <canvas id="chart" style="margin-top: 20px; max-width: 100%; background: #111;"></canvas>
+    <canvas id="chart" style="margin-top:20px; max-width:100%; background:#111;"></canvas>
 
     <script>
         let chart;
@@ -240,7 +240,7 @@ def home():
             if (cost && cost > 0) {
                 const rawProfit = (current - cost) * lbs;
                 const profit = rawProfit.toFixed(2);
-                const percent = (((current - cost) / cost) * 100).toFixed(2);
+                const percent = Number((((current - cost) / cost) * 100).toFixed(2));
 
                 const color = rawProfit >= 0 ? "#0f0" : "#f00";
 
@@ -258,44 +258,36 @@ def home():
                     percent > 0 ? "#ff0" :
                     "#f00";
 
-                const percent = Number((((current - cost) / cost) * 100).toFixed(2));
-                let percentColor = ...
-                let strength = ...
+                let recommendation = "";
+
+                if (rawProfit < 0) {
+                    recommendation = `<br>🚫 Recommendation: <span style="color:#f00; font-weight:bold;">PASS</span>`;
+                } else if (percent >= 10) {
+                    recommendation = `<br>✅ Recommendation: <span style="color:#0ff; font-weight:bold;">SELL NOW</span>`;
+                } else if (percent >= 3) {
+                    recommendation = `<br>👍 Recommendation: <span style="color:#0f0; font-weight:bold;">GOOD DEAL</span>`;
+                } else if (percent > 0) {
+                    recommendation = `<br>⏳ Recommendation: <span style="color:#ff0; font-weight:bold;">HOLD / THIN MARGIN</span>`;
+                }
+
                 profitText = ` | 📈 <span style="color:${color}">Profit: $${profit}</span>`;
-profitText += `<br>⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`;
-profitText += `<br>📊 <span style="color:${percentColor}; font-weight:bold;">Margin: ${percent}%</span> ${strength}`;
+                profitText += `<br>⚖️ Break-even: <span style="color:#0ff">$${cost.toFixed(2)}</span>`;
+                profitText += `<br><span style="font-size:16px;">📊 <span style="color:${percentColor}; font-weight:bold;">Margin: ${percent}%</span> ${strength}</span>`;
+                profitText += recommendation;
 
-let recommendation = "";
-
-if (rawProfit < 0) {
-    recommendation = `<br>🚫 Recommendation: <span style="color:#f00; font-weight:bold;">PASS</span>`;
-} else if (percent >= 10) {
-    recommendation = `<br>✅ Recommendation: <span style="color:#0ff; font-weight:bold;">SELL NOW</span>`;
-} else if (percent >= 3) {
-    recommendation = `<br>👍 Recommendation: <span style="color:#0f0; font-weight:bold;">GOOD DEAL</span>`;
-} else if (percent > 0) {
-    recommendation = `<br>⏳ Recommendation: <span style="color:#ff0; font-weight:bold;">HOLD / THIN MARGIN</span>`;
-}
-
-profitText += recommendation;
-
-if (rawProfit < 0) {
-    profitText += ` | ⚠️ Losing money`;
-}
-            .   
+                if (rawProfit < 0) {
+                    profitText += ` | ⚠️ Losing money`;
                 }
             }
 
             output.innerHTML = `💰 Estimated ${metal} value: $${total} at $${current.toFixed(3)}/lb${profitText}`;
 
-            if (rawProfit > 0) {
-            output.style.boxShadow = "0 0 10px #0f0";
-            } else {
-            output.style.boxShadow = "0 0 10px #f00";
-            }
-            
             output.style.transition = "0.3s";
             output.style.transform = "scale(1.02)";
+            output.style.boxShadow = (cost && cost > 0)
+                ? (((current - cost) * lbs) >= 0 ? "0 0 10px #0f0" : "0 0 10px #f00")
+                : "none";
+
             setTimeout(() => {
                 output.style.transform = "scale(1)";
             }, 200);
