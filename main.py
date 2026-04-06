@@ -68,10 +68,7 @@ best_total = cur.execute("""
 
 conn.close()
 
-return {
-    "history": [dict(row) for row in rows],
-    "best_price": best_price,
-    "best_total": best_total
+return {"status": "saved"}
 }
 
 
