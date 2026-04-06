@@ -57,11 +57,7 @@ rows = cur.execute("""
     ORDER BY id DESC
     LIMIT 20
 """).fetchall()
-    SELECT id, metal, pounds, price_per_lb, total, created_at
-    FROM history
-    ORDER BY id DESC
-    LIMIT 20
-""").fetchall()
+
 
 best_price = cur.execute("""
     SELECT MAX(price_per_lb) FROM history
@@ -71,7 +67,11 @@ best_total = cur.execute("""
     SELECT MAX(total) FROM history
 """).fetchone()[0]
      conn.close()
-     return [dict(row) for row in rows]
+     return {
+    "history": [dict(row) for row in rows],
+    "best_price": best_price,
+    "best_total": best_total
+}
 
 
 @app.get("/market")
