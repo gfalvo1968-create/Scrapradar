@@ -36,12 +36,10 @@ def save_history(metal: str, pounds: float, price: float, total: float):
         INSERT INTO history (metal, pounds, price_per_lb, total)
         VALUES (?, ?, ?, ?)
     """, (metal, pounds, price, total))
+    return {"status": "saved"}
     conn.commit()
     conn.close()
-    return {
-    "history": [dict(row) for row in rows],
-    "best_price": best_price,
-    "best_total": best_total
+    
 }
 
 
@@ -68,7 +66,11 @@ best_total = cur.execute("""
 
 conn.close()
 
-return {"status": "saved"}
+return {
+    "history": [dict(row) for row in rows],
+    "best_price": best_price,
+    "best_total": best_total
+}
 }
 
 
