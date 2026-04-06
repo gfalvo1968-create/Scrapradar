@@ -49,7 +49,14 @@ def save_history(metal: str, pounds: float, price: float, total: float):
 def get_history():
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
-    cur = conn.cursor()rows = cur.execute("""
+    cur = conn.cursor()
+
+rows = cur.execute("""
+    SELECT id, metal, pounds, price_per_lb, total, created_at
+    FROM history
+    ORDER BY id DESC
+    LIMIT 20
+""").fetchall()
     SELECT id, metal, pounds, price_per_lb, total, created_at
     FROM history
     ORDER BY id DESC
