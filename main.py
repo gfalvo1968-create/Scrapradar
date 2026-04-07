@@ -160,7 +160,29 @@ def home():
             background: #111;
             border-radius: 10px;
         }
+        <div class="box">
+    <h2>Gold Calculator</h2>
+
+    <div class="row">
+        <select id="karat">
+            <option value="0.417">10k</option>
+            <option value="0.585">14k</option>
+            <option value="0.750">18k</option>
+            <option value="0.916">22k</option>
+            <option value="0.999">24k</option>
+        </select>
+
+        <input id="goldWeight" placeholder="Weight (grams)">
+        <input id="spotPrice" placeholder="Spot ($/oz)">
+        <input id="payout" placeholder="Payout % (e.g. 80)">
+        
+        <button onclick="calcGold()">Calculate Gold</button>
+    </div>
+
+    <div id="goldResult"></div>
+</div>
     </style>
+
 </head>
 <body>
     <h1>ScrapRadar Dashboard</h1>
@@ -380,6 +402,39 @@ def home():
                 document.getElementById('historyBox').innerText = 'Error loading history';
             }
         }
+
+        function calcGold() {
+    const karat = parseFloat(document.getElementById('karat').value);
+    const grams = parseFloat(document.getElementById('goldWeight').value);
+    const spot = parseFloat(document.getElementById('spotPrice').value);
+    const payout = parseFloat(document.getElementById('payout').value) / 100;
+
+    const output = document.getElementById('goldResult');
+
+    if (!grams || !spot || !payout) {
+        output.innerText = "Enter all values";
+        return;
+    }
+
+    const troyOunce = 31.1035;
+
+    const pureGold = grams * karat;
+    const meltValue = (pureGold / troyOunce) * spot;
+    const offer = meltValue * payout;
+
+    let rating =
+        payout >= 0.9 ? "🔥 Excellent" :
+        payout >= 0.8 ? "✅ Strong" :
+        payout >= 0.7 ? "👍 Fair" :
+        "⚠️ Low";
+
+    output.innerHTML = `
+        🧪 Pure Gold: ${pureGold.toFixed(2)}g<br>
+        💰 Melt Value: $${meltValue.toFixed(2)}<br>
+        🏦 Offer Value: $${offer.toFixed(2)}<br>
+        📊 Rating: <b>${rating}</b>
+    `;
+}
 
         loadData();
         loadHistory();
