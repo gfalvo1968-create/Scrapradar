@@ -90,6 +90,13 @@ def market():
         "forecast": forecast,
         "trend": trend
     }
+@app.get("/gold-spot")
+def gold_spot():
+    gold = yf.Ticker("GC=F")
+    data = gold.history(period="1d")
+    price = float(data["Close"].iloc[-1])
+    return {"price": round(price, 2)}
+
 
 
 @app.get("/", response_class=HTMLResponse)
