@@ -182,7 +182,7 @@ def home():
     opacity:0;
     transition:opacity 0.8s ease;
     padding:20px;
-"></div> <!-- closes startupOverlay -->
+
  
       <h1>ScrapRadar Dashboard</h1>
 
@@ -201,11 +201,11 @@ def home():
     <input id="cost" placeholder="Your cost">
 
     <button onclick="calcValue()">Calculate Value</button>
-</div>
+
 
 <div id="value"></div>
 
-<div id="stats"></div>
+</div> <!-- closes mainApp -->
 
 <div>
     <button onclick="saveCalc()">Save</button>
