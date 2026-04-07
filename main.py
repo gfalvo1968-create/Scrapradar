@@ -175,9 +175,46 @@ def home():
         </div>
     </div>
 
-    mainApp.style.display = 'block';
-mainApp.style.opacity = '1';
+   </div> <!-- closes startupOverlay -->
 
+<div id="mainApp" style="
+    display:none;
+    opacity:0;
+    transition:opacity 0.8s ease;
+    padding:20px;
+"></div> <!-- closes startupOverlay -->
+ 
+      <h1>ScrapRadar Dashboard</h1>
+
+<button onclick="loadData()">Load Market Data</button>
+
+<div style="margin-top:20px; display:flex; gap:10px;">
+    <input id="lbs" placeholder="Enter pounds">
+    
+    <select id="metalType">
+        <option value="copper">Copper</option>
+        <option value="brass">Brass</option>
+        <option value="aluminum">Aluminum</option>
+    </select>
+
+    <input id="customPrice" placeholder="Custom price">
+    <input id="cost" placeholder="Your cost">
+
+    <button onclick="calcValue()">Calculate Value</button>
+</div>
+
+<div id="value"></div>
+
+<div id="stats"></div>
+
+<div>
+    <button onclick="saveCalc()">Save</button>
+    <button onclick="loadHistory()">Load History</button>
+</div>
+
+<div id="historyBox"></div>
+        
+        
         <h1>ScrapRadar Dashboard</h1>
 
         <button onclick="loadData()" style="padding:10px; font-size:16px; border-radius:20px;">
