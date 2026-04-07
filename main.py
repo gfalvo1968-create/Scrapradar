@@ -174,7 +174,8 @@ def home():
         </div>
     </div>
 
-    <div id="mainApp" style="opacity:0; transition:opacity 0.8s ease;">
+    mainApp.style.display = 'block';
+mainApp.style.opacity = '1';
 
         <h1>ScrapRadar Dashboard</h1>
 
@@ -290,8 +291,10 @@ function runStartupIntro() {
 
     playRadarBeep();
 
-    const target = radarTargets[Math.floor(Math.random() * radarTargets.length)];
-    showRadarPing(target);
+    if (angle >= 360) {
+    angle = 0;
+    rotations += 1;
+    playRadarBeep();
 }
 
     const target = radarTargets[Math.floor(Math.random() * radarTargets.length)];
@@ -530,8 +533,10 @@ async function loadHistory() {
     document.getElementById('historyBox').innerHTML = html;
 }
 
-runStartupIntro();
+document.getElementById('startupOverlay').style.display = 'none';
+document.getElementById('mainApp').style.opacity = '1';
 loadData();
+loadHistory();
 </script>
 </body>
 </html>
