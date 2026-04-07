@@ -284,9 +284,15 @@ function runStartupIntro() {
         angle += 4;
         sweep.style.transform = `rotate(${angle}deg)`;
 
-        if (angle >= 360) {
+       if (angle >= 360) {
     angle = 0;
     rotations += 1;
+
+    playRadarBeep();
+
+    const target = radarTargets[Math.floor(Math.random() * radarTargets.length)];
+    showRadarPing(target);
+}
 
     const target = radarTargets[Math.floor(Math.random() * radarTargets.length)];
 
@@ -311,7 +317,7 @@ function runStartupIntro() {
                 }, 850);
             }
         }
-    }, 20);
+    }, 200);
 }
 
 async function loadData() {
