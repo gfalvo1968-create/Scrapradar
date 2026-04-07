@@ -228,6 +228,10 @@ def home():
 
 <script>
 let chart;
+const radarTargets = [
+  { name: "Joe's Scrap Yard", type: "scrap", premium: true },
+  { name: "Main St Jewelers", type: "gold", premium: false },
+];
 
 function playRadarBeep() {
     try {
@@ -281,9 +285,17 @@ function runStartupIntro() {
         sweep.style.transform = `rotate(${angle}deg)`;
 
         if (angle >= 360) {
-            angle = 0;
-            rotations += 1;
-            playRadarBeep();
+    angle = 0;
+    rotations += 1;
+
+    const target = radarTargets[Math.floor(Math.random() * radarTargets.length)];
+
+    showRadarPing(target);
+
+    if (target.premium) {
+        playRadarBeep();
+    }
+}
 
             scale += 0.18;
             title.style.transform = `scale(${scale})`;
