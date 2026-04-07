@@ -211,6 +211,32 @@ def home():
 
     <div id="historyBox" class="box">History will show here...</div>
 
+   <div class="card">
+  <h2>History</h2>
+  ...
+</div>
+
+<!-- 👇 PASTE GOLD HERE -->
+<div class="card">
+  <h2>Gold Calculator</h2>
+
+  <select id="karat">
+    <option value="0.417">10k</option>
+    <option value="0.585">14k</option>
+    <option value="0.750">18k</option>
+    <option value="0.916">22k</option>
+    <option value="0.999">24k</option>
+  </select>
+
+  <input id="goldWeight" placeholder="Weight (grams)">
+  <input id="spotPrice" placeholder="Spot ($/oz)">
+  <input id="payout" placeholder="Payout %">
+
+  <button onclick="calcGold()">Calculate Gold</button>
+
+  <div id="goldResult"></div>
+</div>
+    
     <canvas id="chart"></canvas>
 
     <script>
