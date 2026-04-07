@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 import sqlite3
 import yfinance as yf
 
@@ -320,7 +321,7 @@ function runStartupIntro() {
                 }, 850);
             }
         }
-    }, 200);
+    }, 20);
 }
 
 async function loadData() {
