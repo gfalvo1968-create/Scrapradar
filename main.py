@@ -146,17 +146,18 @@ def home():
                 box-shadow:0 0 12px #0f0;
             "></div>
 
-            <div style="
-                position:absolute;
-                left:50%;
-                top:50%;
-                width:10px;
-                height:10px;
-                background:#0f0;
-                border-radius:50%;
-                transform:translate(-50%, -50%);
-                box-shadow:0 0 10px #0f0;
-            "></div>
+            <img src="/static/logo.png" id="radarLogo" style="
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:80px;
+    height:80px;
+    object-fit:contain;
+    transform:translate(-50%, -50%) scale(0.6);
+    opacity:0;
+    filter:drop-shadow(0 0 12px #0f0);
+    transition:all 1.5s ease;
+">
         </div>
 
         <div id="startupTitle" style="
@@ -230,6 +231,20 @@ let chart;
 
 function playRadarBeep() {
     try {
+        const logo = document.getElementById("radarLogo");
+
+if (logo) {
+    logo.style.opacity = Math.min(rotations * 0.3, 1);
+    logo.style.transform = `translate(-50%, -50%) scale(${0.6 + rotations * 0.2})`;
+
+if (rotations >= 3) {
+    clearInterval(intro);
+    overlay.style.display = "none";
+    mainApp.style.display = "block";
+}
+
+}
+        
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
