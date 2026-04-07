@@ -133,6 +133,8 @@ def home():
                     repeating-radial-gradient(circle, transparent 0 38px, rgba(0,255,0,0.18) 40px 41px),
                     repeating-linear-gradient(0deg, transparent 0 49%, rgba(0,255,0,0.12) 50%, transparent 51%),
                     repeating-linear-gradient(90deg, transparent 0 49%, rgba(0,255,0,0.12) 50%, transparent 51%);
+                    <img src="/static/logo.png" id="radarLogo" ...>
+            
             "></div>
 
             <div id="radarSweep" style="
@@ -209,7 +211,18 @@ def home():
 
 <div>
     <button onclick="saveCalc()">Save</button>
-    <button onclick="loadHistory()">Load History</button>
+   
+    
+   <button onclick="loadHistory()">Load History</button>
+document.getElementById('startupOverlay').style.display = 'none';
+
+const mainApp = document.getElementById('mainApp');
+mainApp.style.display = 'block';
+mainApp.style.opacity = '1';
+
+loadData();
+loadHistory();
+
 </div>
 
 <div id="historyBox"></div>
