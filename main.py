@@ -461,11 +461,12 @@ def home():
         payout >= 0.7 ? "👍 Fair" :
         "⚠️ Low";
 
-    output.innerHTML = `
-        🧪 Pure Gold: ${pureGold.toFixed(2)}g<br>
-        💰 Melt Value: $${meltValue.toFixed(2)}<br>
-        🏦 Offer Value: $${offer.toFixed(2)}<br>
-        📊 Rating: <b>${rating}</b>
+    o. output.innerHTML = `
+🔥 Pure Gold: ${pureGold.toFixed(2)}g<br>
+💰 Melt Value: $${meltValue.toFixed(2)}<br>
+🏦 Offer Value: $${offer.toFixed(2)}<br>
+📊 Rating: <b>${rating}</b>
+`;
     `;
 }
 
