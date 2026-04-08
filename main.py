@@ -236,8 +236,7 @@ def home():
 
   <button onclick="calcGold()">Calculate Gold</button>
 
-function calcGold() {
-  alert("clicked");
+
 }
 
   <div id="goldResult"></div>
