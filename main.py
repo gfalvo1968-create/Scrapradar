@@ -219,11 +219,7 @@ def home():
     <div id="historyBox" class="box">History will show here...</div>
 
    <div class="card">
-  <h2>History</h2>
-  ...
-</div>
-
-
+  <div class="box">
   <h2>Gold Calculator</h2>
 
   <select id="karat">
@@ -240,8 +236,14 @@ def home():
 
   <button onclick="calcGold()">Calculate Gold</button>
 
+function calcGold() {
+  alert("clicked");
+}
+
   <div id="goldResult"></div>
 </div>
+
+>
     
     <canvas id="chart"></canvas>
 
@@ -460,7 +462,7 @@ def home():
         payout >= 0.7 ? "👍 Fair" :
         "⚠️ Low";
 
-     output.innerHTML = `
+output.innerHTML = `
 🔥 Pure Gold: ${pureGold.toFixed(2)}g<br>
 💰 Melt Value: $${meltValue.toFixed(2)}<br>
 🏦 Offer Value: $${offer.toFixed(2)}<br>
