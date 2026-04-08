@@ -223,8 +223,7 @@ def home():
   ...
 </div>
 
-<!-- 👇 PASTE GOLD HERE -->
-<div class="card">
+
   <h2>Gold Calculator</h2>
 
   <select id="karat">
@@ -461,7 +460,7 @@ def home():
         payout >= 0.7 ? "👍 Fair" :
         "⚠️ Low";
 
-    o. output.innerHTML = `
+     output.innerHTML = `
 🔥 Pure Gold: ${pureGold.toFixed(2)}g<br>
 💰 Melt Value: $${meltValue.toFixed(2)}<br>
 🏦 Offer Value: $${offer.toFixed(2)}<br>
