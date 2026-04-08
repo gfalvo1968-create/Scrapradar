@@ -468,6 +468,10 @@ output.innerHTML = `
 📊 Rating: <b>${rating}</b>
 `;
     `;
+function calcGold() {
+  alert("clicked");
+}
+
 }
 
         loadData();
