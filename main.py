@@ -474,4 +474,4 @@ loadData();
 loadHistory();
 </script>
 </body>
-</html>
+
